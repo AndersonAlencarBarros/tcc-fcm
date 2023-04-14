@@ -153,13 +153,13 @@ class FCM():
 
 
 if __name__ == "__main__":
-    n_samples=20000
-    n_clusters=2
-    dimensão=2 
+    n_samples=10000
+    n_clusters=16
+    dimensão=2
 
     np.random.seed(42)
 
-    X = np.random.normal((-1, 1), size=(n_samples, dimensão))
+    X = np.random.normal(size=(n_samples, dimensão))
 
     """A soma dos graus de pertêncimento deve ser igual a 1"""
     u = np.random.uniform(
