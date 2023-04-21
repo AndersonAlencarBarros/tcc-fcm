@@ -10,7 +10,12 @@ def calculate_euclidean_distance(x: np.ndarray, y: np.ndarray):
     """
         Calcula a distância Euclidiana entre dois pontos 
     """
-    return np.sqrt(np.sum((np.subtract(x, y)) ** 2)) ** 2 
+    return np.sum((np.subtract(x, y)) ** 2)      
+
+
+@njit
+def matrix_norm(x: np.ndarray, y: np.ndarray):
+    return np.sqrt(np.sum((np.subtract(x, y)) ** 2)) 
 
 
 @njit
@@ -46,20 +51,20 @@ def update_membership(
     mu: int, 
 ):
     
+    CONST = (1 / (mu - 1))
     for i in range(data.shape[0]):
         for j in range(n_clusters):
             s = np.sum(
                 np.array([
-                    (distances[i][j] / distances[i][k]) 
-                    for k in range(n_clusters)
+                    (distances[i][j] / distances[i][k])  for k in range(n_clusters)
                 ]) 
-            )
+            ) ** CONST
             
-            u[j][i] = (s ** (1 / (mu - 1))) ** (-1)
+            u[j][i] = s ** -1
             
 
 @njit
-def find_centroids(u: np.ndarray, data: np.ndarray, mu: int):
+def update_centroids(u: np.ndarray, data: np.ndarray, mu: int):
     C = np.array(
             [np.sum((i ** mu) * j) / np.sum((i ** mu)) for i in u for j in data.T]
         )
@@ -86,8 +91,7 @@ def mmg(
 
 
 class FCM():
-
-    def __init__(self, n_clusters, mu=2, max_iter=50, eps=0.01):
+    def __init__(self, n_clusters, mu=2, max_iter=50, eps=np.finfo(np.float64).eps):
         self.n_clusters = n_clusters
         self.mu = mu
         self.eps = eps
@@ -109,12 +113,12 @@ class FCM():
         )
 
 
-    def _find_centroids(self):
+    def _update_centroids(self):
         """
             Etapa de Minimização
             Atualização da posição dos centros
         """ 
-        self.centers = find_centroids(self.u, self.data, self.mu)
+        self.centers = update_centroids(self.u, self.data, self.mu)
   
 
     def J(self):
@@ -138,28 +142,28 @@ class FCM():
         self.u = u
         self.data = data
 
-        self._find_centroids()
+        self._update_centroids()
 
         for _ in range(self.max_iter):
             u_copy = self.u.copy()
 
             self._update_membership()
-            self._find_centroids()
+            self._update_centroids()
             self.J()
 
             '''Critério de Parada'''
-            if (calculate_euclidean_distance(u_copy, self.u)) < self.eps:
+            if (matrix_norm(u_copy, self.u)) < self.eps:
                 break
 
 
 if __name__ == "__main__":
-    n_samples=10000
-    n_clusters=16
+    n_samples=20000
+    n_clusters=1000
     dimensão=2
 
     np.random.seed(42)
 
-    X = np.random.normal(size=(n_samples, dimensão))
+    X = np.random.normal((-1,1), size=(n_samples, dimensão))
 
     """A soma dos graus de pertêncimento deve ser igual a 1"""
     u = np.random.uniform(
@@ -183,11 +187,11 @@ if __name__ == "__main__":
     print(fcm.u)
 
     """Plot"""
-    fig, axes = plt.subplots(1, 2, figsize=(11,5))
-    axes[0].scatter(X[:,0], X[:,1], alpha=1)
-    axes[1].scatter(X[:,0], X[:,1], alpha=0.5)
-    axes[1].scatter(fcm.centers[:,0], fcm.centers[:,1], marker="+", s=1000, c='red')
-    plt.show()
+    # fig, axes = plt.subplots(1, 2, figsize=(11,5))
+    # axes[0].scatter(X[:,0], X[:,1], alpha=1)
+    # axes[1].scatter(X[:,0], X[:,1], alpha=0.5)
+    # axes[1].scatter(fcm.centers[:,0], fcm.centers[:,1], marker="+", s=1000, c='red')
+    # plt.show()
 
 
 '''
