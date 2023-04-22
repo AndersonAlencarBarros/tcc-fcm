@@ -3,9 +3,12 @@ import numpy as np
 import random
 import time
 from numba import njit
+from numba.experimental import jitclass
+from numba import int32, float64
+import argparse, sys
 
 
-@njit
+@njit(cache = True)
 def calculate_euclidean_distance(x: np.ndarray, y: np.ndarray):
     """
         Calcula a distância Euclidiana entre dois pontos 
@@ -13,12 +16,12 @@ def calculate_euclidean_distance(x: np.ndarray, y: np.ndarray):
     return np.sum((np.subtract(x, y)) ** 2)      
 
 
-@njit
+@njit(cache = True)
 def matrix_norm(x: np.ndarray, y: np.ndarray):
     return np.sqrt(np.sum((np.subtract(x, y)) ** 2)) 
 
 
-@njit
+@njit(cache = True)
 def calculate_distances(data: np.ndarray, centers: np.ndarray):
     """
         Calcular distâncias de cada ponto a cada centro
@@ -42,7 +45,7 @@ def calculate_distances(data: np.ndarray, centers: np.ndarray):
     return distances
 
 
-@njit
+@njit(cache = True)
 def update_membership(
     u: np.ndarray,
     data: np.ndarray,
@@ -63,7 +66,7 @@ def update_membership(
             u[j][i] = s ** -1
             
 
-@njit
+@njit(cache = True)
 def update_centroids(u: np.ndarray, data: np.ndarray, mu: int):
     C = np.array(
             [np.sum((i ** mu) * j) / np.sum((i ** mu)) for i in u for j in data.T]
@@ -72,7 +75,7 @@ def update_centroids(u: np.ndarray, data: np.ndarray, mu: int):
     return np.reshape(C, (C.shape[0] // data.shape[1], data.shape[1]))
 
 
-@njit
+@njit(cache = True)
 def mmg(
     u: np.ndarray, 
     data: np.ndarray, 
@@ -89,7 +92,14 @@ def mmg(
 
     return total
 
+# spec = [
+#     ('n_clusters', int32),              
+#     ('mu', int32),              
+#     ('max_iter', int32),              
+#     ('eps', float64),              
+# ]
 
+# @jitclass(spec)
 class FCM():
     def __init__(self, n_clusters, mu=2, max_iter=50, eps=np.finfo(np.float64).eps):
         self.n_clusters = n_clusters
@@ -157,13 +167,14 @@ class FCM():
 
 
 if __name__ == "__main__":
-    n_samples=20000
-    n_clusters=1000
-    dimensão=2
+    
+    n_samples= 20000
+    n_clusters=2
+    dimensão=2 
 
     np.random.seed(42)
 
-    X = np.random.normal((-1,1), size=(n_samples, dimensão))
+    X = np.random.normal((-1, 1), size=(n_samples, dimensão))
 
     """A soma dos graus de pertêncimento deve ser igual a 1"""
     u = np.random.uniform(
@@ -173,18 +184,21 @@ if __name__ == "__main__":
     )
 
     fcm = FCM(n_clusters=n_clusters, mu=2)
-
+     
     start = time.perf_counter()
     fcm.fit(data=X, u=u)
     end = time.perf_counter()
 
+    print()
     print(f"Elapsed = {end - start}s")
+    print() 
     
     print('FCM')
     print('centers')
     print(fcm.centers)
     print('u')
     print(fcm.u)
+    print()
 
     """Plot"""
     # fig, axes = plt.subplots(1, 2, figsize=(11,5))
