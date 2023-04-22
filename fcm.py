@@ -91,15 +91,8 @@ def mmg(
             total += (distance * _u)
 
     return total
-
-# spec = [
-#     ('n_clusters', int32),              
-#     ('mu', int32),              
-#     ('max_iter', int32),              
-#     ('eps', float64),              
-# ]
-
-# @jitclass(spec)
+ 
+ 
 class FCM():
     def __init__(self, n_clusters, mu=2, max_iter=50, eps=np.finfo(np.float64).eps):
         self.n_clusters = n_clusters
@@ -145,7 +138,7 @@ class FCM():
         print(j)
 
 
-    def fit(self, data, u):
+    def fit(self, data: np.ndarray, u: np.ndarray):
         """
             Treinamento.
         """
@@ -168,7 +161,7 @@ class FCM():
 
 if __name__ == "__main__":
     
-    n_samples= 20000
+    n_samples=20000
     n_clusters=2
     dimensão=2 
 
