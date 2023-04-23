@@ -122,6 +122,7 @@ class FCM():
             Atualização da posição dos centros
         """ 
         self.centers = update_centroids(self.u, self.data, self.mu)
+        print(self.centers)
   
 
     def J(self):
@@ -147,7 +148,9 @@ class FCM():
 
         self._update_centroids()
 
-        for _ in range(self.max_iter):
+        for i in range(self.max_iter):
+            print(f'Iteração {i}')
+            
             u_copy = self.u.copy()
 
             self._update_membership()
@@ -165,16 +168,31 @@ if __name__ == "__main__":
     n_clusters=2
     dimensão=2 
 
-    np.random.seed(42)
+    # np.random.seed(42)
 
-    X = np.random.normal((-1, 1), size=(n_samples, dimensão))
+    # X = np.random.normal((-1, 1), size=(n_samples, dimensão))
 
+    X = np.array([
+            [1, 3],
+            [2, 5],
+            [4, 8],
+            [7, 9],
+    ])
+    
+    u = np.array([
+            [0.8, 0.7, 0.2, 0.1],
+            [0.2, 0.3, 0.8, 0.9]
+    ])
+    
     """A soma dos graus de pertêncimento deve ser igual a 1"""
-    u = np.random.uniform(
-        low=0, 
-        high=1, 
-        size=(n_clusters, len(X))
-    )
+    # u = np.random.uniform(
+    #     low=0, 
+    #     high=1, 
+    #     size=(n_clusters, len(X))
+    # )
+    
+    
+    print(u)
 
     fcm = FCM(n_clusters=n_clusters, mu=2)
      
