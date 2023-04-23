@@ -1,14 +1,7 @@
 from src.fcm import FCM
 import numpy as np
 import time
-
-
-def func(x):
-    return x + 1
-
-
-def test_answer():
-    assert func(4) == 5
+import random
 
 
 def test_FCM():
@@ -32,6 +25,39 @@ def test_FCM():
 
     print()
     print(f"Elapsed = {end - start}s")
+    print()
+    
+    print('FCM')
+    print('centers')
+    print(fcm.centers)
+    print('u')
+    print(fcm.u)
+    
+
+def test_FCM_2():
+    n_samples=20000
+    n_clusters=2
+    dimensão=2 
+
+    np.random.seed(42)
+    X = np.random.normal((-1, 1), size=(n_samples, dimensão))
+  
+    u = np.random.uniform(
+        low=0, 
+        high=1, 
+        size=(n_clusters, len(X))
+    )
+    
+    print(u)
+
+    fcm = FCM(n_clusters=n_clusters, mu=2)
+     
+    start = time.perf_counter()
+    fcm.fit(data=X, u=u)
+    end = time.perf_counter()
+
+    print()
+    print(f"Elapsed = {end - start}s")
     print() 
     
     print('FCM')
@@ -39,3 +65,4 @@ def test_FCM():
     print(fcm.centers)
     print('u')
     print(fcm.u)
+    print()

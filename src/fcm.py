@@ -121,7 +121,6 @@ class FCM():
             Atualização da posição dos centros
         """ 
         self.centers = update_centroids(self.u, self.data, self.mu)
-        print(self.centers)
   
 
     def J(self):
@@ -135,7 +134,7 @@ class FCM():
             self.mu
         )
             
-        print(j)
+        # print(j)
 
 
     def fit(self, data: np.ndarray, u: np.ndarray):
@@ -147,8 +146,8 @@ class FCM():
 
         self._update_centroids()
 
-        for i in range(self.max_iter):
-            print(f'Iteração {i}')
+        for _ in range(self.max_iter):
+            # print(f'Iteração {i}')
             
             u_copy = self.u.copy()
 
@@ -230,3 +229,4 @@ if __name__ == "__main__":
     gerar incializacao aleatorias dentro das restricoes
     otimizar o metodo
 '''
+
