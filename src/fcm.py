@@ -162,8 +162,8 @@ class FCM():
 
 if __name__ == "__main__":
     
-    # n_samples=20000
     n_clusters=2
+    # n_samples=20000
     # dimensão=2 
 
     # np.random.seed(42)
