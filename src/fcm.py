@@ -162,9 +162,9 @@ class FCM():
 
 if __name__ == "__main__":
     
-    n_samples=20000
+    # n_samples=20000
     n_clusters=2
-    dimensão=2 
+    # dimensão=2 
 
     # np.random.seed(42)
 
@@ -188,9 +188,8 @@ if __name__ == "__main__":
     #     high=1, 
     #     size=(n_clusters, len(X))
     # )
-    
-    
-    print(u)
+     
+    # print(u)
 
     fcm = FCM(n_clusters=n_clusters, mu=2)
      
