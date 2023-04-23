@@ -5,7 +5,6 @@ import time
 from numba import njit
 from numba.experimental import jitclass
 from numba import int32, float64
-import argparse, sys
 
 
 @njit(cache = True)
