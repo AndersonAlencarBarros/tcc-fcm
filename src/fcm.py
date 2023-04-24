@@ -59,8 +59,8 @@ def update_membership(
             s = np.sum(
                 np.array([
                     (distances[i][j] / distances[i][k])  for k in range(n_clusters)
-                ]) 
-            ) ** CONST
+                ]) ** CONST
+            ) 
             
             u[j][i] = s ** -1
             
@@ -121,7 +121,7 @@ class FCM():
             Atualização da posição dos centros
         """ 
         self.centers = update_centroids(self.u, self.data, self.mu)
-  
+        print(self.centers)
 
     def J(self):
         """
