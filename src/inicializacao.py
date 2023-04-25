@@ -1,5 +1,6 @@
-from itertools import product
+import numpy as np
 from random import SystemRandom
+from itertools import product
 from json import dumps
 import os
 from pathlib import Path
@@ -11,20 +12,22 @@ dimensoes = [2, 4, 8, 16]
 
 
 for dimensao, obs in product(dimensoes, observacoes):
-    bases = []
-    for _ in range(100):
-        vector = [[sr.random() for _ in range(dimensao)] for _ in range(obs)]
-        bases.append(vector)
+    u = np.random.uniform(
+        low=0, 
+        high=1, 
+        size=(dimensao, obs)
+    )
+    
+    u = u / np.sum(u)
 
     dados = {
         "dimensao": dimensao,
         "observacoes": obs,
-        "bases": bases
+        "u": u.tolist()
     }
 
-    base = Path(f'bases/dimensao_{dimensao}')
-    jsonpath = base / f"obs_{obs}.json"
+    base = Path(f'inicializacao/init_{dimensao}')
+    jsonpath = base / f"init_{dimensao}_{obs}.json"
 
     base.mkdir(exist_ok=True)
     jsonpath.write_text(dumps(dados))
-    
