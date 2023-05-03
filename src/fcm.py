@@ -50,10 +50,10 @@ def update_membership(
     data: np.ndarray,
     distances: np.ndarray, 
     n_clusters: int, 
-    mu: int, 
+    mu: np.float64, 
 ):
     
-    CONST = (1 / (mu - 1))
+    CONST: np.float64 = (1 / (mu - 1))
     for i in range(data.shape[0]):
         for j in range(n_clusters):
             s = np.sum(
@@ -66,7 +66,7 @@ def update_membership(
             
 
 @njit(cache = True)
-def update_centroids(u: np.ndarray, data: np.ndarray, mu: int):
+def update_centroids(u: np.ndarray, data: np.ndarray, mu: np.float64):
     C = np.array(
             [np.sum((i ** mu) * j) / np.sum((i ** mu)) for i in u for j in data.T]
         )
@@ -79,7 +79,7 @@ def mmg(
     u: np.ndarray, 
     data: np.ndarray, 
     centers: np.ndarray, 
-    mu: int
+    mu: np.float64
 ):
     total = 0
     for i, d in enumerate(data):
@@ -146,7 +146,7 @@ class FCM():
 
         self._update_centroids()
 
-        for _ in range(self.max_iter):
+        while True:
             # print(f'Iteração {i}')
             
             u_copy = self.u.copy()
