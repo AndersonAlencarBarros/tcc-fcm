@@ -3,8 +3,6 @@ import numpy as np
 import random
 import time
 from numba import njit
-from numba.experimental import jitclass
-from numba import int32, float64
 
 
 @njit(cache = True)
@@ -93,12 +91,10 @@ def mmg(
  
  
 class FCM():
-    def __init__(self, n_clusters, mu=2, max_iter=50, eps=np.finfo(np.float64).eps):
+    def __init__(self, n_clusters: int, mu: int = 2, eps=np.finfo(np.float64).eps):
         self.n_clusters = n_clusters
         self.mu = mu
         self.eps = eps
-        self.max_iter = max_iter 
-
 
     def _update_membership(self):
         """
@@ -121,7 +117,6 @@ class FCM():
             Atualização da posição dos centros
         """ 
         self.centers = update_centroids(self.u, self.data, self.mu)
-        print(self.centers)
 
     def J(self):
         """
@@ -147,8 +142,6 @@ class FCM():
         self._update_centroids()
 
         while True:
-            # print(f'Iteração {i}')
-            
             u_copy = self.u.copy()
 
             self._update_membership()
