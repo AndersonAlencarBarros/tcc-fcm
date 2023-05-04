@@ -6,7 +6,7 @@ from numba import njit
 
 
 @njit(cache = True)
-def calculate_euclidean_distance(x: np.ndarray, y: np.ndarray):
+def calculate_euclidean_distance(x: np.ndarray, y: np.ndarray) -> np.float64:
     """
         Calcula a distância Euclidiana entre dois pontos 
     """
@@ -14,17 +14,17 @@ def calculate_euclidean_distance(x: np.ndarray, y: np.ndarray):
 
 
 @njit(cache = True)
-def matrix_norm(x: np.ndarray, y: np.ndarray):
+def matrix_norm(x: np.ndarray, y: np.ndarray) -> np.float64:
     return np.sqrt(np.sum((np.subtract(x, y)) ** 2)) 
 
 
 @njit(cache = True)
-def calculate_distances(data: np.ndarray, centers: np.ndarray):
+def calculate_distances(data: np.ndarray, centers: np.ndarray) -> np.ndarray:
     """
         Calcular distâncias de cada ponto a cada centro
     """
             
-    distances = np.array(
+    distances: np.ndarray = np.array(
         [calculate_euclidean_distance(i, j) for i in data for j in centers]
     )
     
@@ -32,7 +32,7 @@ def calculate_distances(data: np.ndarray, centers: np.ndarray):
         Cada linha representa um ponto, cada coluna representa um centro
         d[0][1] : distância do ponto zero ao centro um.
     """
-    distances = np.reshape(
+    distances: np.ndarray = np.reshape(
             distances, (
                 distances.shape[0] // centers.shape[0], 
                 centers.shape[0]
@@ -56,15 +56,15 @@ def update_membership(
         for j in range(n_clusters):
             s = np.sum(
                 np.array([
-                    (distances[i][j] / distances[i][k])  for k in range(n_clusters)
-                ]) ** CONST
+                    (distances[i][j] / distances[i][k]) ** CONST  for k in range(n_clusters)
+                ]) 
             ) 
             
             u[j][i] = s ** -1
             
 
 @njit(cache = True)
-def update_centroids(u: np.ndarray, data: np.ndarray, mu: np.float64):
+def update_centroids(u: np.ndarray, data: np.ndarray, mu: np.float64) -> np.ndarray:
     C = np.array(
             [np.sum((i ** mu) * j) / np.sum((i ** mu)) for i in u for j in data.T]
         )
@@ -78,7 +78,7 @@ def mmg(
     data: np.ndarray, 
     centers: np.ndarray, 
     mu: np.float64
-):
+) -> np.float64:
     total = 0
     for i, d in enumerate(data):
         for j, c in enumerate(centers):
@@ -91,10 +91,11 @@ def mmg(
  
  
 class FCM():
-    def __init__(self, n_clusters: int, mu: int = 2, eps=np.finfo(np.float64).eps):
+    def __init__(self, n_clusters: int, mu: np.float64 = 2, eps=np.finfo(np.float64).eps):
         self.n_clusters = n_clusters
         self.mu = mu
         self.eps = eps
+
 
     def _update_membership(self):
         """
@@ -116,20 +117,19 @@ class FCM():
             Etapa de Minimização
             Atualização da posição dos centros
         """ 
-        self.centers = update_centroids(self.u, self.data, self.mu)
+        self.centers: np.ndarray = update_centroids(self.u, self.data, self.mu)
+
 
     def J(self):
         """
             Mínimos Quadrados Generalizados (MMG)
         """
-        j = mmg(
+        j: np.float64 = mmg(
             self.u, 
             self.data, 
             self.centers, 
             self.mu
         )
-            
-        # print(j)
 
 
     def fit(self, data: np.ndarray, u: np.ndarray):
@@ -190,6 +190,17 @@ if __name__ == "__main__":
     fcm.fit(data=X, u=u)
     end = time.perf_counter()
 
+    import skfuzzy as fuzz
+    
+    cntr, u, u0, d, jm, p, fpc = fuzz.cluster.cmeans(
+        data=X, 
+        c=n_clusters, 
+        m=2, 
+        error=np.finfo(np.float64).eps, 
+        maxiter=30, 
+        init=u.T
+    )
+    
     print()
     print(f"Elapsed = {end - start}s")
     print() 
@@ -200,6 +211,8 @@ if __name__ == "__main__":
     print('u')
     print(fcm.u)
     print()
+
+    print(cntr)
 
     """Plot"""
     # fig, axes = plt.subplots(1, 2, figsize=(11,5))
