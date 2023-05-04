@@ -104,11 +104,11 @@ class FCM():
         """
         distances = calculate_distances(self.data, self.centers)
         update_membership(
-            self.u, 
-            self.data, 
-            distances, 
-            self.n_clusters, 
-            self.mu
+            u=self.u, 
+            data=self.data, 
+            distances=distances, 
+            n_clusters=self.n_clusters, 
+            mu=self.mu
         )
 
 
@@ -117,7 +117,7 @@ class FCM():
             Etapa de Minimização
             Atualização da posição dos centros
         """ 
-        self.centers: np.ndarray = update_centroids(self.u, self.data, self.mu)
+        self.centers: np.ndarray = update_centroids(u=self.u, data=self.data, mu=self.mu)
 
 
     def J(self):
@@ -125,10 +125,10 @@ class FCM():
             Mínimos Quadrados Generalizados (MMG)
         """
         j: np.float64 = mmg(
-            self.u, 
-            self.data, 
-            self.centers, 
-            self.mu
+            u=self.u, 
+            data=self.data, 
+            centers=self.centers, 
+            mu=self.mu
         )
 
 
@@ -234,4 +234,3 @@ if __name__ == "__main__":
     gerar incializacao aleatorias dentro das restricoes
     otimizar o metodo
 '''
-
