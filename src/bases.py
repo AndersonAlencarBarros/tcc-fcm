@@ -6,6 +6,8 @@ from pathlib import Path
 
 
 sr = SystemRandom()
+
+
 observacoes = [10, 100, 1000, 10000]
 dimensoes = [2, 4, 8, 16]
 
@@ -13,7 +15,7 @@ dimensoes = [2, 4, 8, 16]
 for dimensao, obs in product(dimensoes, observacoes):
     bases = []
     for _ in range(100):
-        vector = [[sr.random() for _ in range(dimensao)] for _ in range(obs)]
+        vector = [ [sr.random() for _ in range(dimensao)] for _ in range(obs)]
         bases.append(vector)
 
     dados = {

@@ -1,47 +1,47 @@
 import numpy as np
 from random import SystemRandom
-from itertools import product
-from json import dumps
-import os
 from pathlib import Path
-import pandas as pd
+import os
+from json import dumps
 
 
 sr = SystemRandom()
 
 
-observacoes = [10000] # 10, 100, 1000,
+observacoes = [10, 100, 1000, 10000]
 qnt_agrupamentos = [
-    # [2, 3, 6, 9],
-    # [2, 24, 48, 99],
-    # [2, 249, 498, 999],
-    [2, 2499, 4998, 9999],
+    [2, 4, 6, 9],
+    [2, 34, 66, 99],
+    [2, 334, 666, 999],
+    [2, 3334, 6666, 9999],
 ]
-dimensoes = [2, 4, 8, 16]
 
 
 for obs, n_clusters in zip(observacoes, qnt_agrupamentos):
     for n in n_clusters: 
-        print(obs, n)
-        u = [
-            np.random.uniform(
-                low=0, 
-                high=1, 
-                size=(n, obs)
-            ) for _ in range(100)
-        ]
+        for i in range(1, 101):
+            print(obs, n)
+            u = [
+                np.random.uniform(
+                    low=0, 
+                    high=1, 
+                    size=(n, obs)
+                ) 
+            ]
 
-        u /= np.sum(u)
-    
-        dados = {
-            "observacoes": obs,
-            "u": u.tolist()
-        }
+            ''' Normalizar por coluna, a soma deve ser igual a 1 '''
+            u /= np.sum(u)
+            
+            ''' Verificar cada coluna soma 1'''
         
-        pd.DataFrame(dados).to_json(f"inicializacao/init_{obs}/init_{n}_{obs}.json")
+            dados = {
+                "observacoes": obs,
+                "n_cluster": n,
+                "u": u.tolist()
+            }
+            
+            base = Path(f'inicializacao/init_{obs}')
+            jsonpath = base / f"{i}_init_{n}_{obs}.json"
 
-        # base = Path(f'inicializacao/init_{obs}')
-        # jsonpath = base / f"init_{n}_{obs}.json"
-
-        # base.mkdir(exist_ok=True)
-        # jsonpath.write_text(dumps(dados))
+            base.mkdir(exist_ok=True)
+            jsonpath.write_text(dumps(dados))

@@ -3,16 +3,15 @@ import numpy as np
 import random
 import time
 from numba import njit
-from typing import Optional
-from fcmeans import FCM as _FCM
+from typing import Optional 
 
 
 @njit(cache = True)
 def calculate_euclidean_distance(x: np.ndarray, y: np.ndarray) -> np.float64:
     """
-        Calcula a distância Euclidiana entre dois pontos 
+        Quadrado da distância Euclidiana entre dois pontos  
     """
-    return np.sum((np.subtract(x, y)) ** 2)      
+    return np.sum((np.subtract(x, y)) ** 2.0)      
 
 
 @njit(cache = True)
@@ -20,7 +19,7 @@ def matrix_norm(x: np.ndarray, y: np.ndarray) -> np.float64:
     """
         Norma de Frobenius
     """
-    return np.sqrt(np.sum((np.subtract(x, y)) ** 2)) 
+    return np.sqrt(np.sum((np.subtract(x, y)) ** 2.0)) 
 
 
 @njit(cache = True)
@@ -56,17 +55,19 @@ def update_membership(
     mu: np.float64, 
 ) -> None:
     
-    CONST: np.float64 = (1 / (mu - 1))
+    CONST: np.float64 = (1.0 / (mu - 1.0))
     for i in range(data.shape[0]):
         for j in range(n_clusters):
             s: np.float64 = np.sum(
                 np.array([
-                    (distances[i][j] / distances[i][k]) ** CONST  for k in range(n_clusters)
+                    (distances[i][j] / distances[i][k]) ** CONST for k in range(n_clusters)
                 ]) 
-            ) 
+            )
             
-            u[j][i] = s ** -1
+            u[j][i] = s ** -1.0
             
+            ''' Verificar se a soma para todos os clusters são igual a 1'''
+            # assert np.sum(u[j]) == 1
 
 @njit(cache = True)
 def update_centroids(u: np.ndarray, data: np.ndarray, mu: np.float64) -> np.ndarray:
@@ -143,7 +144,8 @@ class FCM():
                 size=(self.n_clusters, self.data.shape[0])
         )
 
-        u /= np.sum(u)
+        ''' Verificar a soma igual  1 '''
+        # u /= np.sum(u)
         
         return u
 
@@ -203,7 +205,6 @@ if __name__ == "__main__":
     fcm = FCM(n_clusters=n_clusters, mu=2)
      
     start = time.perf_counter()
-    # fcm.fit(data=X)
     fcm.fit(data=X, u=u)
     end = time.perf_counter()
   
@@ -217,13 +218,7 @@ if __name__ == "__main__":
     print('u')
     print(fcm.u)
     print()
-
-
-    print('_FCM')
-    _fcm = _FCM(n_clusters=2, m=2, error=1e-09)
-    _fcm.fit(X)
-    print(_fcm.centers)
-
+  
 
     """Plot"""
     # fig, axes = plt.subplots(1, 2, figsize=(11,5))
