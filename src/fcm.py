@@ -3,6 +3,8 @@ import numpy as np
 import random
 import time
 from numba import njit
+from typing import Optional
+from fcmeans import FCM as _FCM
 
 
 @njit(cache = True)
@@ -15,6 +17,9 @@ def calculate_euclidean_distance(x: np.ndarray, y: np.ndarray) -> np.float64:
 
 @njit(cache = True)
 def matrix_norm(x: np.ndarray, y: np.ndarray) -> np.float64:
+    """
+        Norma de Frobenius
+    """
     return np.sqrt(np.sum((np.subtract(x, y)) ** 2)) 
 
 
@@ -49,12 +54,12 @@ def update_membership(
     distances: np.ndarray, 
     n_clusters: int, 
     mu: np.float64, 
-):
+) -> None:
     
     CONST: np.float64 = (1 / (mu - 1))
     for i in range(data.shape[0]):
         for j in range(n_clusters):
-            s = np.sum(
+            s: np.float64 = np.sum(
                 np.array([
                     (distances[i][j] / distances[i][k]) ** CONST  for k in range(n_clusters)
                 ]) 
@@ -130,19 +135,30 @@ class FCM():
             centers=self.centers, 
             mu=self.mu
         )
+        
+    def _gerar_inicializacao(self) -> np.ndarray:
+        u: np.ndarray = np.random.uniform(
+                low=0, 
+                high=1, 
+                size=(self.n_clusters, self.data.shape[0])
+        )
+
+        u /= np.sum(u)
+        
+        return u
 
 
-    def fit(self, data: np.ndarray, u: np.ndarray):
+    def fit(self, data: np.ndarray, u: Optional[np.ndarray] = None):
         """
             Treinamento.
         """
-        self.u = u
         self.data = data
+        self.u = self._gerar_inicializacao() if u is None else u
 
         self._update_centroids()
 
         while True:
-            u_copy = self.u.copy()
+            u_copy: np.ndarray = self.u.copy()
 
             self._update_membership()
             self._update_centroids()
@@ -187,20 +203,10 @@ if __name__ == "__main__":
     fcm = FCM(n_clusters=n_clusters, mu=2)
      
     start = time.perf_counter()
+    # fcm.fit(data=X)
     fcm.fit(data=X, u=u)
     end = time.perf_counter()
-
-    import skfuzzy as fuzz
-    
-    cntr, u, u0, d, jm, p, fpc = fuzz.cluster.cmeans(
-        data=X, 
-        c=n_clusters, 
-        m=2, 
-        error=np.finfo(np.float64).eps, 
-        maxiter=30, 
-        init=u.T
-    )
-    
+  
     print()
     print(f"Elapsed = {end - start}s")
     print() 
@@ -212,7 +218,12 @@ if __name__ == "__main__":
     print(fcm.u)
     print()
 
-    print(cntr)
+
+    print('_FCM')
+    _fcm = _FCM(n_clusters=2, m=2, error=1e-09)
+    _fcm.fit(X)
+    print(_fcm.centers)
+
 
     """Plot"""
     # fig, axes = plt.subplots(1, 2, figsize=(11,5))

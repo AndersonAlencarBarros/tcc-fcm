@@ -1,7 +1,31 @@
-from src.fcm import FCM
 import numpy as np
 import time
 import random
+import pytest
+from src.fcm import FCM
+from fcmeans import FCM as _FCM
+
+
+@pytest.fixture
+def observacoes():
+    X = np.array([
+            [1, 3],
+            [2, 5],
+            [4, 8],
+            [7, 9],
+    ])
+    
+    return X
+
+
+@pytest.fixture
+def inicializacao():
+    u = np.array([
+            [0.8, 0.7, 0.2, 0.1],
+            [0.2, 0.3, 0.8, 0.9]
+    ])
+    
+    return u
 
 
 def test_FCM():
@@ -66,3 +90,32 @@ def test_FCM_2():
     print('u')
     print(fcm.u)
     print()
+
+
+def test_comparacao_com_outra_implementacao():
+    n_clusters=2
+    
+    X = np.array([
+            [1, 3],
+            [2, 5],
+            [4, 8],
+            [7, 9],
+    ])
+    
+    u = np.array([
+            [0.8, 0.7, 0.2, 0.1],
+            [0.2, 0.3, 0.8, 0.9]
+    ])
+    
+    fcm = FCM(n_clusters=n_clusters, mu=2)
+    fcm.fit(data=X, u=u)
+  
+    print('FCM')
+    print(fcm.centers)
+
+    print('_FCM')
+    _fcm = _FCM(n_clusters=2, m=2, error=1e-09)
+    _fcm.fit(X)
+    print(_fcm.centers)
+    
+    assert _fcm.centers.shape == fcm.centers.shape
