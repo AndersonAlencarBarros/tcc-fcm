@@ -3,6 +3,8 @@ from random import SystemRandom
 from pathlib import Path
 import os
 from json import dumps
+from sklearn import preprocessing
+from math import ceil
 
 
 sr = SystemRandom()
@@ -18,30 +20,35 @@ qnt_agrupamentos = [
 
 
 for obs, n_clusters in zip(observacoes, qnt_agrupamentos):
-    for n in n_clusters: 
-        for i in range(1, 101):
+    for i, n in enumerate(n_clusters): 
+        # for i in range(1, 101):
             print(obs, n)
-            u = [
-                np.random.uniform(
-                    low=0, 
-                    high=1, 
-                    size=(n, obs)
-                ) 
-            ]
-
-            ''' Normalizar por coluna, a soma deve ser igual a 1 '''
-            u /= np.sum(u)
+            l = []
+            for _ in range(obs):
+                u = np.random.uniform(
+                        size=(n),
+                    )
+                
+                ''' Normalizar por coluna, a soma deve ser igual a 1 '''
+                u /= np.sum(u)
+                
+                 
+                assert round(np.sum(u)) == 1.0, 'Soma das colunas diferente de 1'
+                
+                l.append(u.tolist())
+              
+            l = np.array(l) 
             
             ''' Verificar cada coluna soma 1'''
         
             dados = {
                 "observacoes": obs,
                 "n_cluster": n,
-                "u": u.tolist()
+                "u": l.T.tolist()
             }
             
             base = Path(f'inicializacao/init_{obs}')
-            jsonpath = base / f"{i}_init_{n}_{obs}.json"
+            jsonpath = base / f"init_{i}_{n}.json"
 
             base.mkdir(exist_ok=True)
             jsonpath.write_text(dumps(dados))
