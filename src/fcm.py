@@ -4,6 +4,10 @@ import random
 import time
 from numba import njit
 from typing import Optional 
+from math import isclose
+
+class GrauDePertinenciaInvalido(Exception):
+    ...
 
 
 @njit(cache = True)
@@ -29,7 +33,8 @@ def calculate_distances(data: np.ndarray, centers: np.ndarray) -> np.ndarray:
     """
             
     distances: np.ndarray = np.array(
-        [calculate_euclidean_distance(i, j) for i in data for j in centers]
+        [calculate_euclidean_distance(i, j) for i in data for j in centers],
+        dtype='f8'
     )
     
     """
@@ -40,13 +45,25 @@ def calculate_distances(data: np.ndarray, centers: np.ndarray) -> np.ndarray:
             distances, (
                 distances.shape[0] // centers.shape[0], 
                 centers.shape[0]
-            )
+            )  
     )
     
     return distances
 
+ 
+def __verificar_soma_igual_a_1__(matriz: np.ndarray) -> bool:
+    print(matriz)
+    
+    soma_colunas = np.sum(matriz, axis=0)
+    
+    print(soma_colunas)
+    
+    ''' Verificar se a soma de cada coluna é igual a 1 '''
+    print (all(isclose(x, 1.0) for x in soma_colunas))
+    # return np.allclose(soma_colunas, 1.0) #  == 1.0, 'Soma das colunas diferente de 1'
 
-@njit(cache = True)
+
+# @njit(cache = True)
 def update_membership(
     u: np.ndarray,
     data: np.ndarray,
@@ -58,21 +75,29 @@ def update_membership(
     CONST: np.float64 = (1.0 / (mu - 1.0))
     for i in range(data.shape[0]):
         for j in range(n_clusters):
-            s: np.float64 = np.sum(
+            
+            s = np.sum(
                 np.array([
-                    (distances[i][j] / distances[i][k]) ** CONST for k in range(n_clusters)
-                ]) 
-            )
+                    (distances[i][j] / distances[i][k]) ** CONST  for k in range(n_clusters)
+                ], dtype='f8'),
+                
+            ) 
             
             u[j][i] = s ** -1.0
             
+            # print(u)
+            __verificar_soma_igual_a_1__(u)
+            
             ''' Verificar se a soma para todos os clusters são igual a 1'''
-            # assert np.sum(u[j]) == 1
+            # if not __verificar_soma_igual_a_1__(u):
+            #     raise GrauDePertinenciaInvalido('Valor do grau de pertencimento inválido')
+            
 
 @njit(cache = True)
 def update_centroids(u: np.ndarray, data: np.ndarray, mu: np.float64) -> np.ndarray:
     C = np.array(
-            [np.sum((i ** mu) * j) / np.sum((i ** mu)) for i in u for j in data.T]
+            [np.sum((i ** mu) * j) / np.sum((i ** mu)) for i in u for j in data.T],
+            dtype='f8'
         )
         
     return np.reshape(C, (C.shape[0] // data.shape[1], data.shape[1]))
@@ -136,16 +161,17 @@ class FCM():
             centers=self.centers, 
             mu=self.mu
         )
+         
         
     def _gerar_inicializacao(self) -> np.ndarray:
         u: np.ndarray = np.random.uniform(
-                low=0, 
-                high=1, 
                 size=(self.n_clusters, self.data.shape[0])
-        )
-
-        ''' Verificar a soma igual  1 '''
-        # u /= np.sum(u)
+            )
+                
+        ''' Normaliza por coluna, divide cada elemento de cada coluna pela soma total daquela coluna '''
+        u = u / np.sum(u, axis=0, keepdims=1)     
+        
+        # assert __verificar_soma_igual_a_1__(u) == True
         
         return u
 
@@ -156,7 +182,7 @@ class FCM():
         """
         self.data = data
         self.u = self._gerar_inicializacao() if u is None else u
-
+  
         self._update_centroids()
 
         while True:
@@ -205,7 +231,7 @@ if __name__ == "__main__":
     fcm = FCM(n_clusters=n_clusters, mu=2)
      
     start = time.perf_counter()
-    fcm.fit(data=X, u=u)
+    fcm.fit(data=X, u=u) # u=u
     end = time.perf_counter()
   
     print()
