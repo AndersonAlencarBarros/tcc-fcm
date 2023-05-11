@@ -52,13 +52,12 @@ def calculate_distances(data: np.ndarray, centers: np.ndarray) -> np.ndarray:
 
  
 def __verificar_soma_igual_a_1__(matriz: np.ndarray) -> bool:
-    print(matriz)
+    ''' Verificar se a soma de cada coluna é igual a 1 '''
     
     soma_colunas = np.sum(matriz, axis=0)
     
     print(soma_colunas)
     
-    ''' Verificar se a soma de cada coluna é igual a 1 '''
     print (all(isclose(x, 1.0) for x in soma_colunas))
     # return np.allclose(soma_colunas, 1.0) #  == 1.0, 'Soma das colunas diferente de 1'
 
@@ -73,24 +72,16 @@ def update_membership(
 ) -> None:
     
     CONST: np.float64 = (1.0 / (mu - 1.0))
-    for i in range(data.shape[0]):
-        for j in range(n_clusters):
+    for k in range(data.shape[0]):
+        for i in range(n_clusters):
+            soma: np.float64 = 0.0
+            for j in range(n_clusters):
+                soma += (distances[k][i] / distances[k][j]) ** CONST
             
-            s = np.sum(
-                np.array([
-                    (distances[i][j] / distances[i][k]) ** CONST  for k in range(n_clusters)
-                ], dtype='f8'),
-                
-            ) 
             
-            u[j][i] = s ** -1.0
-            
-            # print(u)
-            __verificar_soma_igual_a_1__(u)
-            
-            ''' Verificar se a soma para todos os clusters são igual a 1'''
-            # if not __verificar_soma_igual_a_1__(u):
-            #     raise GrauDePertinenciaInvalido('Valor do grau de pertencimento inválido')
+            u[i][k] = 1.0 / soma
+    
+    # __verificar_soma_igual_a_1__(u)
             
 
 @njit(cache = True)
@@ -161,6 +152,8 @@ class FCM():
             centers=self.centers, 
             mu=self.mu
         )
+        
+        print(j)
          
         
     def _gerar_inicializacao(self) -> np.ndarray:
@@ -187,8 +180,9 @@ class FCM():
 
         while True:
             u_copy: np.ndarray = self.u.copy()
-
+ 
             self._update_membership()
+            self.J()
             self._update_centroids()
             self.J()
 
