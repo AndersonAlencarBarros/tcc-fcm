@@ -1,10 +1,7 @@
 import numpy as np
 from random import SystemRandom
 from pathlib import Path
-import os
 from json import dumps
-from sklearn import preprocessing
-from math import ceil
 
 
 sr = SystemRandom()
@@ -20,7 +17,7 @@ qnt_agrupamentos = [
 
 
 for obs, n_clusters in zip(observacoes, qnt_agrupamentos):
-    for i, n in enumerate(n_clusters): 
+    for i, n in enumerate(n_clusters):          ## talvez usar o i para o nome das bases
         # for i in range(1, 101):
             print(obs, n)
             u = np.random.uniform(
@@ -42,7 +39,7 @@ for obs, n_clusters in zip(observacoes, qnt_agrupamentos):
             }
             
             base = Path(f'inicializacao/init_{obs}')
-            jsonpath = base / f"init_{i}_{n}.json"
+            jsonpath = base / f"init_{n}.json"
 
             base.mkdir(exist_ok=True)
             jsonpath.write_text(dumps(dados))

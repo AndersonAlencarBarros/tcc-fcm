@@ -1,30 +1,41 @@
-import numpy as np
 from fcm import FCM
-import pandas as pd
+from pprint import pprint
 
 
-def ler_json(dimensao: int, obs: int):
-    return pd.read_json(
-            f'inicializacao/init_{obs}/init_{dimensao}_{obs}.json',
-            precise_float=True,
-            orient='records',
-        )
+def _ler_json(caminho_arquivo: str):
+    import json
+ 
+    with open(caminho_arquivo) as arquivo: 
+        return json.load(arquivo)
+
+
+def ler_base_de_dados(dimensao: int, observacoes: int):
+    caminho_arquivo = f'../bases/dimensao_{dimensao}/obs_{observacoes}.json'
+    
+    return _ler_json(caminho_arquivo)
+
+
+def ler_inicializacao(observacoes: int, n_clusters: int):
+    caminho_arquivo = f'../inicializacao/init_{observacoes}/init_{n_clusters}.json'
+    
+    return _ler_json(caminho_arquivo)
+
 
 if __name__ == "__main__":
     dimensoes = [2, 4, 8, 16]
     observacoes = [10, 100, 1000, 10000]
-    n_clusters = [
-        [2, 3, 6, 9],
-        [2, 24, 48, 99],
-        [2, 249, 498, 999],
-        [2, 2499, 4998, 9999],
-    ]
+    qnt_agrupamentos = [
+        [2, 4, 6, 9],
+        [2, 34, 66, 99],
+        [2, 334, 666, 999],
+        [2, 3334, 6666, 9999],
+    ] 
     
-    dados = ler_json(2, 10)  
-    print(dados["u"][: 1])
+    # dados = ler_inicializacao(observacoes=100, n_clusters=2)
+    dados = ler_base_de_dados(dimensao=2, observacoes=10000)
     
-    
-    
+    pprint(len(dados["bases"]))
+      
     
     # for d in dimensoes:
     #     for obs in observacoes:
@@ -51,4 +62,3 @@ if __name__ == "__main__":
     #                     n_clusters=n[3], 
     #                     mu=(1.1 ** m)
     #                 )
-

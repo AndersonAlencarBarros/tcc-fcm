@@ -13,15 +13,15 @@ dimensoes = [2, 4, 8, 16]
 
 
 for dimensao, obs in product(dimensoes, observacoes):
-    bases = []
-    for _ in range(100):
-        vector = [ [sr.random() for _ in range(dimensao)] for _ in range(obs)]
-        bases.append(vector)
+    # bases = []
+    # for _ in range(100):
+    vector = [ [sr.random() for _ in range(dimensao)] for _ in range(obs)]
+    # bases.append(vector)
 
     dados = {
         "dimensao": dimensao,
         "observacoes": obs,
-        "bases": bases
+        "bases": vector
     }
 
     base = Path(f'bases/dimensao_{dimensao}')
