@@ -130,3 +130,14 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+/.idea/.gitignore
+/src/exception.py
+/src/experimento/experimento_dimensao_2_obs_10.csv
+/src/experimento_10/experimento_dimensao_2_obs_10.csv
+/src/experimento/experimento_dimensao_2_obs_100.csv
+/src/experimento_100/experimento_dimensao_2_obs_100.csv
+/.idea/fcm.iml
+/.idea/misc.xml
+/.idea/modules.xml
+/.idea/inspectionProfiles/profiles_settings.xml
+/.idea/vcs.xml

@@ -29,6 +29,17 @@ if __name__ == "__main__":
     import time
     import pandas as pd
 
+    """
+        mu ->  1,100 
+                8,325
+                15,550
+                22,775
+                30.000
+                
+                1 conjunto de dados
+                10 inicializacoes para cada configuracao quantidade de observacoes e de agrupamentos
+    """
+
     dimensoes = [2, 4, 8, 16]
     observacoes = [10, 100, 1000, 10000]
     qnt_agrupamentos = [

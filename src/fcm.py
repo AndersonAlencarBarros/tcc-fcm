@@ -105,13 +105,11 @@ class FCM:
         self,
         n_clusters: int,
         mu: np.float64 = 2,
-        eps=np.finfo(np.float64).eps,
-        max_iter: int = 50,
+        eps = 0.01
     ):
         self.n_clusters = n_clusters
         self.mu = mu
         self.eps = eps
-        self.max_iter = max_iter
 
     def _update_membership(self):
         """
@@ -142,7 +140,7 @@ class FCM:
         """
         j: np.float64 = mmg(u=self.u, data=self.data, centers=self.centers, mu=self.mu)
 
-        # print(j)
+        print(j)
 
     def _gerar_inicializacao(self) -> np.ndarray:
         u: np.ndarray = np.random.uniform(size=(self.n_clusters, self.data.shape[0]))
@@ -154,7 +152,7 @@ class FCM:
 
         return u
 
-    def fit(self, data: np.ndarray, u: Optional[np.ndarray] = None):
+    def fit(self, data: np.ndarray, u: Optional[np.ndarray] = None) -> None:
         """
         Treinamento.
         """
@@ -163,11 +161,13 @@ class FCM:
 
         self._update_centroids()
 
-        for _ in range(self.max_iter):
+
+        while True:
             u_copy: np.ndarray = self.u.copy()
 
             self._update_membership()
             self._update_centroids()
+
 
             """Critério de Parada"""
             if (matrix_norm(u_copy, self.u)) < self.eps:
@@ -212,7 +212,7 @@ if __name__ == "__main__":
     # pprint(inicializacao)
     pprint(inicializacao.shape)
 
-    fcm = FCM(n_clusters=2, mu=23.22515441988787)
+    fcm = FCM(n_clusters=2, mu=1.61)
 
     start = time.perf_counter()
     fcm.fit(
@@ -246,9 +246,4 @@ if __name__ == "__main__":
     custo
     particao
     centros
-"""
-
-"""
-    gerar incializacao aleatorias dentro das restricoes
-    otimizar o metodo
 """
