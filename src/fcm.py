@@ -4,7 +4,7 @@ from typing import Optional
 
 
 # @njit(cache=True)
-def calculate_euclidean_distance(x: np.ndarray, y: np.ndarray) -> np.float64:
+def calculate_euclidean_distance(x: np.ndarray, y: np.ndarray) -> np.float128:
     """
     Quadrado da distância Euclidiana entre dois pontos
     """
@@ -12,7 +12,7 @@ def calculate_euclidean_distance(x: np.ndarray, y: np.ndarray) -> np.float64:
 
 
 # @njit(cache=True)
-def matrix_norm(x: np.ndarray, y: np.ndarray) -> np.float64:
+def matrix_norm(x: np.ndarray, y: np.ndarray) -> np.float128:
     """
     Norma de Frobenius
     """
@@ -26,8 +26,9 @@ def calculate_distances(data: np.ndarray, centers: np.ndarray) -> np.ndarray:
     """
 
     distances: np.ndarray = np.array(
-        [calculate_euclidean_distance(i, j) for i in data for j in centers], dtype="f8"
-    )
+        [calculate_euclidean_distance(i, j) for i in data for j in centers],
+        dtype=np.float128
+    )  
 
     """
         Cada linha representa um ponto, cada coluna representa um centro
@@ -61,31 +62,41 @@ def update_membership(
     n_clusters: int,
     mu: np.float64,
 ) -> None:
-    expoente: np.float64 = 1.0 / (mu - 1.0)
+    
+    from decimal import Decimal
+            
+    expoente = Decimal(1.0 / (mu - 1.0))
     for k in range(data.shape[0]):
         for i in range(n_clusters):
-            # razao_entre_as_distancias: np.float64 = 0.0
+            razao_entre_as_distancias = Decimal(0.0)
             
-            # for j in range(n_clusters):
-            #     razao_entre_as_distancias += (
-            #         distances[k][i] / distances[k][j]
-            #     ) ** expoente
+            for j in range(n_clusters):
                 
-            razao_entre_as_distancias: np.float64 = np.sum(
-                [(distances[k][i] / distances[k][j] ** expoente) for j in range(n_clusters)],
-                dtype=np.float128
-            )   
+                numerador = Decimal(float(distances[k][i]))
+                denominador = Decimal(float(distances[k][j]))
+                
+                razao_entre_as_distancias += (
+                   numerador / denominador
+                ) ** expoente
+            
+           
+            
+            # razao_entre_as_distancias: np.float128 = np.sum(
+            #     [(distances[k][i] / distances[k][j] ** expoente) for j in range(n_clusters)],
+            # )   
+            
+            print(razao_entre_as_distancias)
 
-            u[i][k] = 1.0 / razao_entre_as_distancias
+            u[i][k] = np.divide(1.0, float(razao_entre_as_distancias)) # 1.0 / razao_entre_as_distancias
 
     # __verificar_soma_igual_a_1__(u)
 
 
 # @njit(cache=True)
-def update_centroids(u: np.ndarray, data: np.ndarray, mu: np.float64) -> np.ndarray:
+def update_centroids(u: np.ndarray, data: np.ndarray, mu: np.float128) -> np.ndarray:
     C = np.array(
         [np.sum((i**mu) * j) / np.sum((i**mu)) for i in u for j in data.T],
-        dtype=np.float64
+        dtype="f8",
     )
 
     return np.reshape(C, (C.shape[0] // data.shape[1], data.shape[1]))
@@ -93,8 +104,8 @@ def update_centroids(u: np.ndarray, data: np.ndarray, mu: np.float64) -> np.ndar
 
 # @njit(cache=True)
 def mmg(
-    u: np.ndarray, data: np.ndarray, centers: np.ndarray, mu: np.float64
-) -> np.float64:
+    u: np.ndarray, data: np.ndarray, centers: np.ndarray, mu: np.float128
+) -> np.float128:
     total = 0
     for i, d in enumerate(data):
         for j, c in enumerate(centers):
@@ -107,7 +118,7 @@ def mmg(
 
 
 class FCM:
-    def __init__(self, n_clusters: int, mu: np.float64 = 2, eps=0.01):
+    def __init__(self, n_clusters: int, mu: np.float128 = 2, eps=0.01):
         self.n_clusters = n_clusters
         self.mu = mu
         self.eps = eps
@@ -139,9 +150,9 @@ class FCM:
         """
         Mínimos Quadrados Generalizados (MMG)
         """
-        j: np.float64 = mmg(u=self.u, data=self.data, centers=self.centers, mu=self.mu)
+        j: np.float128 = mmg(u=self.u, data=self.data, centers=self.centers, mu=self.mu)
 
-        self.j: np.float64 = j
+        self.j: np.float128 = j
 
     def _gerar_inicializacao(self) -> np.ndarray:
         u: np.ndarray = np.random.uniform(size=(self.n_clusters, self.data.shape[0]))
@@ -166,10 +177,7 @@ class FCM:
             u_copy: np.ndarray = self.u.copy()
 
             self._update_membership()
-            
-            print(self.u)
-            
-            self.J()
+            self.J()   
             self._update_centroids()
 
             """Critério de Parada"""
@@ -187,7 +195,7 @@ if __name__ == "__main__":
     dimensao=2
     observacoes=10
     n_clusters=2
-    mu=8.325
+    mu=10
         
     base_de_dados = ler_base_de_dados(dimensao=dimensao, observacoes=observacoes)
 
