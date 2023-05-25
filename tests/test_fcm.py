@@ -28,6 +28,28 @@ def inicializacao():
 
 
 def test_FCM():
+    
+    # n_clusters=2
+    # mu = 1.61
+
+    # X = np.array([
+    #         [1, 3],
+    #         [2, 5],
+    #         [4, 8],
+    #         [7, 9],
+    # ])
+
+    # u = np.array([
+    #         [0.8, 0.7, 0.2, 0.1],
+    #         [0.2, 0.3, 0.8, 0.9]
+    # ])
+
+    # fcm = FCM(n_clusters=n_clusters, mu=mu)
+
+    # start = time.perf_counter()
+    # fcm.fit(data=X, u=u)
+    # end = time.perf_counter()
+    
     X = np.array(
         [
             [1, 3],

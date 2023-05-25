@@ -74,7 +74,7 @@ if __name__ == "__main__":
                 inicializacao = ler_inicializacao(observacoes=obs, n_clusters=n)
 
                 for m in range(1, 36):
-                    mu = 1.1**m
+                    mu = 1.1**mobs
 
                     print(f"iteração {m} - mu {mu}")
 

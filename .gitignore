@@ -141,3 +141,6 @@ dmypy.json
 /.idea/modules.xml
 /.idea/inspectionProfiles/profiles_settings.xml
 /.idea/vcs.xml
+/src/experimento_1000/
+/src/experimento_100/
+/src/experimento_10/

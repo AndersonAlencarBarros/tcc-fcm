@@ -30,7 +30,9 @@ for obs, n_clusters in zip(observacoes, qnt_agrupamentos):
             soma_colunas = np.sum(u, axis=0)
 
             """ Verificar cada coluna soma 1"""
-            assert np.allclose(soma_colunas, 1.0) == 1.0, "Soma das colunas diferente de 1"
+            assert (
+                np.allclose(soma_colunas, 1.0) == 1.0
+            ), "Soma das colunas diferente de 1"
 
             dados = {"observacoes": obs, "n_cluster": n, "u": u.tolist()}
 
