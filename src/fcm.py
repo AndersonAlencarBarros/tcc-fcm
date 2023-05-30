@@ -1,22 +1,33 @@
 import numpy as np
 from numba import njit
 from typing import Optional
-
+ 
+from mpmath import mp, mpf, power, fdiv as div
+mp.dps = 100
 
 # @njit(cache=True)
 def calculate_euclidean_distance(x: np.ndarray, y: np.ndarray) -> np.float128:
     """
     Quadrado da distância Euclidiana entre dois pontos
-    """
-    return np.sum((np.subtract(x, y)) ** 2.0)
+    """ 
+    
+    return mpf(
+        str(
+            np.sum((np.subtract(x, y)) ** mpf("2.0"))
+        )
+    )
 
 
 # @njit(cache=True)
 def matrix_norm(x: np.ndarray, y: np.ndarray) -> np.float128:
     """
     Norma de Frobenius
-    """
-    return np.sqrt(np.sum((np.subtract(x, y)) ** 2.0))
+    """ 
+    from mpmath import sqrt
+    
+    return sqrt(
+        np.sum((np.subtract(x, y)) ** mpf(2.0))
+    )
 
 
 # @njit(cache=True)
@@ -24,10 +35,8 @@ def calculate_distances(data: np.ndarray, centers: np.ndarray) -> np.ndarray:
     """
     Calcular distâncias de cada ponto a cada centro
     """
-
     distances: np.ndarray = np.array(
-        [calculate_euclidean_distance(i, j) for i in data for j in centers],
-        dtype=np.float128
+        [(calculate_euclidean_distance(i, j)) for i in data for j in centers],
     )  
 
     """
@@ -48,10 +57,10 @@ def __verificar_soma_igual_a_1__(matriz: np.ndarray) -> bool:
     from math import isclose
 
     soma_colunas = np.sum(matriz, axis=0)
-
-    assert (
-        all(isclose(x, 1.0) for x in soma_colunas)
-    ) == True, "Soma das colunas diferente de 1"
+      
+    assert all(
+        isclose(x, 1.0) for x in soma_colunas
+    ), f"Soma das colunas diferente de 1, {matriz} \n\n {soma_colunas}"
 
 
 # @njit(cache = True)
@@ -60,44 +69,50 @@ def update_membership(
     data: np.ndarray,
     distances: np.ndarray,
     n_clusters: int,
-    mu: np.float64,
-) -> None:
+    mu: np.float128,
+) -> None: 
     
-    from decimal import Decimal
-            
-    expoente = Decimal(1.0 / (mu - 1.0))
+    expoente = div("2", str(mu - 1))
+    
     for k in range(data.shape[0]):
         for i in range(n_clusters):
-            razao_entre_as_distancias = Decimal(0.0)
+            soma_da_razao_entre_as_distancias = mpf("0.0")
             
             for j in range(n_clusters):
+                numerador = distances[k][i]  
+                denominador = distances[k][j] 
                 
-                numerador = Decimal(float(distances[k][i]))
-                denominador = Decimal(float(distances[k][j]))
+                # try:   
+                soma_da_razao_entre_as_distancias += (
+                    div(numerador, denominador)
+                )
+                # except ZeroDivisionError:
+                #     break
                 
-                razao_entre_as_distancias += (
-                   numerador / denominador
-                ) ** expoente
-            
-           
-            
-            # razao_entre_as_distancias: np.float128 = np.sum(
-            #     [(distances[k][i] / distances[k][j] ** expoente) for j in range(n_clusters)],
-            # )   
-            
-            print(razao_entre_as_distancias)
-
-            u[i][k] = np.divide(1.0, float(razao_entre_as_distancias)) # 1.0 / razao_entre_as_distancias
-
+                soma_da_razao_entre_as_distancias = power(
+                    soma_da_razao_entre_as_distancias, expoente
+                ) 
+                   
+                razao = power(soma_da_razao_entre_as_distancias, "-1")
+                  
+                u[i][k] = razao     
+                
     # __verificar_soma_igual_a_1__(u)
-
-
-# @njit(cache=True)
-def update_centroids(u: np.ndarray, data: np.ndarray, mu: np.float128) -> np.ndarray:
+ 
+ 
+def update_centroids(u: np.ndarray, data: np.ndarray, mu: np.float128) -> np.ndarray: 
     C = np.array(
-        [np.sum((i**mu) * j) / np.sum((i**mu)) for i in u for j in data.T],
-        dtype="f8",
+        [   
+            (
+                mpf(
+                    str(
+                        div(np.sum((i**mu) * j), np.sum((i**mu)))
+                    )
+                )
+            ) for i in u for j in data.T
+        ]
     )
+   
 
     return np.reshape(C, (C.shape[0] // data.shape[1], data.shape[1]))
 
@@ -109,7 +124,7 @@ def mmg(
     total = 0
     for i, d in enumerate(data):
         for j, c in enumerate(centers):
-            distance = calculate_euclidean_distance(c, d)
+            distance = float(calculate_euclidean_distance(c, d))
             _u = u[j][i] ** mu
 
             total += distance * _u
@@ -118,10 +133,11 @@ def mmg(
 
 
 class FCM:
-    def __init__(self, n_clusters: int, mu: np.float128 = 2, eps=0.01):
+    def __init__(self, n_clusters: int, mu = 2, eps=0.01):
         self.n_clusters = n_clusters
-        self.mu = mu
-        self.eps = eps
+        self.mu = mpf(mu)
+        self.eps = mpf(eps)
+        self.j = 1
 
     def _update_membership(self):
         """
@@ -160,6 +176,9 @@ class FCM:
         """ Normaliza por coluna, divide cada elemento de cada coluna pela soma total daquela coluna """
         u = u / np.sum(u, axis=0, keepdims=1)
 
+        to_bigfloat = np.vectorize(lambda x: mpf(x))
+        
+        u = to_bigfloat(u)
         # assert __verificar_soma_igual_a_1__(u) == True
 
         return u
@@ -167,17 +186,19 @@ class FCM:
     def fit(self, data: np.ndarray, u: Optional[np.ndarray] = None) -> None:
         """
         Treinamento.
-        """
-        self.data = data
-        self.u = self._gerar_inicializacao() if u is None else u
-
+        """ 
+        
+        to_bigfloat = np.vectorize(lambda x: mpf(str(x)))
+        
+        self.data = to_bigfloat(data) 
+        self.u = self._gerar_inicializacao() if u is None else to_bigfloat(u)
         self._update_centroids()
 
         for _ in range(50):
             u_copy: np.ndarray = self.u.copy()
 
             self._update_membership()
-            self.J()   
+            # self.J()   
             self._update_centroids()
 
             """Critério de Parada"""
@@ -190,12 +211,11 @@ if __name__ == "__main__":
     import time
     from utils import ler_base_de_dados, ler_inicializacao
     from pprint import pprint
-
-
+ 
     dimensao=2
     observacoes=10
-    n_clusters=2
-    mu=10
+    n_clusters=4
+    mu=1.1
         
     base_de_dados = ler_base_de_dados(dimensao=dimensao, observacoes=observacoes)
 
