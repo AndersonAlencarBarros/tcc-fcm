@@ -27,46 +27,44 @@ df = pd.DataFrame(
 
 for d in dimensao:
     base_de_dados = ler_base_de_dados(dimensao=d, observacoes=observacoes)
-  
-    for n_clusters in qnt_agrupamentos: 
-            for m in mu: 
-                
-                for j in range(10): 
 
-                    inicializacao = ler_inicializacao(
-                        iteracao=j, observacoes=observacoes, n_clusters=n_clusters
-                    )
-                
-                    print(f"dimensao {d} n_clusters {n_clusters} j {j} mu {m}")
+    for n_clusters in qnt_agrupamentos:
+        for m in mu:
+            for j in range(10):
+                inicializacao = ler_inicializacao(
+                    iteracao=j, observacoes=observacoes, n_clusters=n_clusters
+                )
 
-                    fcm = FCM(n_clusters=n_clusters, mu=m)
+                print(f"dimensao {d} n_clusters {n_clusters} j {j} mu {m}")
 
-                    start = time.perf_counter()
-                    fcm.fit(data=base_de_dados, u=inicializacao)
-                    end = time.perf_counter()
+                fcm = FCM(n_clusters=n_clusters, mu=m)
 
-                    elapsed = end - start 
+                start = time.perf_counter()
+                fcm.fit(data=base_de_dados, u=inicializacao)
+                end = time.perf_counter()
 
-                    nova_linha = {
-                        "dimensão": d,
-                        "mu": m,
-                        "quantidade de observações": observacoes,
-                        "quantidade de agrupamentos": n_clusters,
-                        "tempo de execução (s)": elapsed,
-                        "custo": fcm.j,
-                        "u": fcm.u,
-                        "centers": fcm.centers,
-                    }
+                elapsed = end - start
 
-                    df = pd.concat([df, pd.DataFrame([nova_linha])], ignore_index=True)
-    
-                    nome_pasta = f"experimento_{observacoes}"
+                nova_linha = {
+                    "dimensão": d,
+                    "mu": m,
+                    "quantidade de observações": observacoes,
+                    "quantidade de agrupamentos": n_clusters,
+                    "tempo de execução (s)": elapsed,
+                    "custo": fcm.j,
+                    "u": fcm.u,
+                    "centers": fcm.centers,
+                }
 
-                    if not os.path.exists(nome_pasta):
-                        os.makedirs(nome_pasta)
+                df = pd.concat([df, pd.DataFrame([nova_linha])], ignore_index=True)
 
-                    df.to_csv(
-                        f"{nome_pasta}/experimento_dimensao_{d}_obs_{observacoes}.csv",
-                        encoding="utf-8",
-                        index=False,
-                    )
+                nome_pasta = f"experimento_{observacoes}"
+
+                if not os.path.exists(nome_pasta):
+                    os.makedirs(nome_pasta)
+
+                df.to_csv(
+                    f"{nome_pasta}/experimento_dimensao_{d}_obs_{observacoes}.csv",
+                    encoding="utf-8",
+                    index=False,
+                )
