@@ -1,10 +1,11 @@
 import numpy as np
 from numba import njit
 from typing import Optional
-
 from mpmath import mp, mpf
 
+
 mp.dps = 80
+
 
 # @njit(cache=True)
 def calculate_euclidean_distance(x: np.ndarray, y: np.ndarray) -> np.float128:
@@ -12,7 +13,7 @@ def calculate_euclidean_distance(x: np.ndarray, y: np.ndarray) -> np.float128:
     Quadrado da distância Euclidiana entre dois pontos
     """
     from mpmath import fsum
-    
+
     return mpf(fsum((np.subtract(x, y)) ** mpf(2)))
 
 
@@ -68,48 +69,29 @@ def update_membership(
     mu: np.float128,
 ) -> None:
     from mpmath import power, fdiv, fadd
-    
+
     expoente = fdiv(mpf(2), mu - mpf(1))
 
     for k in range(data.shape[0]):
         for i in range(n_clusters):
-            u_copy = u.copy()
-            # soma_da_razao_entre_as_distancias = mpf(0)
-
-            # for j in range(n_clusters): 
-            #     # try:
-            #     soma_da_razao_entre_as_distancias = fadd(
-            #         soma_da_razao_entre_as_distancias, fdiv(distances[k][i], distances[k][j])
-            #     )
-            #     # except ZeroDivisionError:
-            #     #     return True, u_copy
-
-            #     soma_da_razao_entre_as_distancias = power(
-            #         soma_da_razao_entre_as_distancias, expoente
-            #     )
-
-            #     razao = fdiv(mpf(1), soma_da_razao_entre_as_distancias)
-
-            #     u[i][k] = razao
-
             soma_razao_entre_as_distancias = np.sum(
-                [power(fdiv(distances[k][i], distances[k][j]), expoente) for j in range(n_clusters)]
-            )   
-            
+                [
+                    power(fdiv(distances[k][i], distances[k][j]), expoente)
+                    for j in range(n_clusters)
+                ]
+            )
+
             u[i][k] = fdiv(1.0, soma_razao_entre_as_distancias)
 
     __verificar_soma_igual_a_1__(u)
-    return False, {}
 
 
 def update_centroids(u: np.ndarray, data: np.ndarray, mu: np.float128) -> np.ndarray:
     from mpmath import fdiv
-    
+
     C = np.array(
         [
-            (mpf(
-                str(fdiv(np.sum((i**mu) * j), np.sum((i**mu)))))
-            )
+            (mpf(str(fdiv(np.sum((i**mu) * j), np.sum((i**mu))))))
             for i in u
             for j in data.T
         ]
@@ -138,7 +120,6 @@ class FCM:
         self.n_clusters = n_clusters
         self.mu = mpf(mu)
         self.eps = mpf(eps)
-        self.j = 1
 
     def _update_membership(self):
         """
@@ -146,18 +127,13 @@ class FCM:
         Atualização do grau de pertencimento
         """
         distances = calculate_distances(self.data, self.centers)
-        flag, u = update_membership(
+        update_membership(
             u=self.u,
             data=self.data,
             distances=distances,
             n_clusters=self.n_clusters,
             mu=self.mu,
         )
-
-        if flag and flag is not None:
-            print("flag")
-            print(flag)
-            self.u = u
 
     def _update_centroids(self):
         """
@@ -172,10 +148,8 @@ class FCM:
         """
         Mínimos Quadrados Generalizados (MMG)
         """
-        j: np.float128 = mmg(u=self.u, data=self.data, centers=self.centers, mu=self.mu)
-        print("j")
-        print(j)
-        self.j: np.float128 = j
+        j = mmg(u=self.u, data=self.data, centers=self.centers, mu=self.mu)
+        self.j = j
 
     def _gerar_inicializacao(self) -> np.ndarray:
         u: np.ndarray = np.random.uniform(size=(self.n_clusters, self.data.shape[0]))
@@ -186,7 +160,7 @@ class FCM:
         to_bigfloat = np.vectorize(lambda x: mpf(x))
 
         u = to_bigfloat(u)
-        # assert __verificar_soma_igual_a_1__(u) == True
+        # __verificar_soma_igual_a_1__(u)
 
         return u
 
@@ -201,7 +175,6 @@ class FCM:
         self.u = self._gerar_inicializacao() if u is None else to_bigfloat(u)
         self._update_centroids()
 
-        # for _ in range(500):
         while True:
             u_copy: np.ndarray = self.u.copy()
 
