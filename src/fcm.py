@@ -1,5 +1,4 @@
 import numpy as np
-from numba import njit
 from typing import Optional
 from mpmath import mp, mpf
 
@@ -7,7 +6,6 @@ from mpmath import mp, mpf
 mp.dps = 80
 
 
-# @njit(cache=True)
 def calculate_euclidean_distance(x: np.ndarray, y: np.ndarray) -> np.float128:
     """
     Quadrado da distância Euclidiana entre dois pontos
@@ -17,7 +15,6 @@ def calculate_euclidean_distance(x: np.ndarray, y: np.ndarray) -> np.float128:
     return mpf(fsum((np.subtract(x, y)) ** mpf(2)))
 
 
-# @njit(cache=True)
 def matrix_norm(x: np.ndarray, y: np.ndarray) -> np.float128:
     """
     Norma de Frobenius
@@ -27,7 +24,6 @@ def matrix_norm(x: np.ndarray, y: np.ndarray) -> np.float128:
     return sqrt(np.sum((np.subtract(x, y)) ** mpf(2.0)))
 
 
-# @njit(cache=True)
 def calculate_distances(data: np.ndarray, centers: np.ndarray) -> np.ndarray:
     """
     Calcular distâncias de cada ponto a cada centro
@@ -60,7 +56,6 @@ def __verificar_soma_igual_a_1__(matriz: np.ndarray) -> bool:
     ), f"Soma das colunas diferente de 1, \n\n matriz \n {matriz} \n\n soma_colunas \n {soma_colunas}"
 
 
-# @njit(cache = True)
 def update_membership(
     u: np.ndarray,
     data: np.ndarray,
@@ -100,7 +95,6 @@ def update_centroids(u: np.ndarray, data: np.ndarray, mu: np.float128) -> np.nda
     return np.reshape(C, (C.shape[0] // data.shape[1], data.shape[1]))
 
 
-# @njit(cache=True)
 def mmg(
     u: np.ndarray, data: np.ndarray, centers: np.ndarray, mu: np.float128
 ) -> np.float128:
@@ -121,6 +115,7 @@ class FCM:
         self.mu = mpf(mu)
         self.eps = mpf(eps)
 
+
     def _update_membership(self):
         """
         Etapa de Atribuição
@@ -135,6 +130,7 @@ class FCM:
             mu=self.mu,
         )
 
+
     def _update_centroids(self):
         """
         Etapa de Minimização
@@ -144,12 +140,14 @@ class FCM:
             u=self.u, data=self.data, mu=self.mu
         )
 
+
     def J(self):
         """
         Mínimos Quadrados Generalizados (MMG)
         """
         j = mmg(u=self.u, data=self.data, centers=self.centers, mu=self.mu)
         self.j = j
+
 
     def _gerar_inicializacao(self) -> np.ndarray:
         u: np.ndarray = np.random.uniform(size=(self.n_clusters, self.data.shape[0]))
@@ -163,6 +161,7 @@ class FCM:
         # __verificar_soma_igual_a_1__(u)
 
         return u
+
 
     def fit(self, data: np.ndarray, u: Optional[np.ndarray] = None) -> None:
         """
@@ -193,9 +192,9 @@ if __name__ == "__main__":
     from utils import ler_base_de_dados, ler_inicializacao
     from pprint import pprint
 
-    dimensao = 16
-    observacoes = 100
-    n_clusters = 99
+    dimensao = 2
+    observacoes = 10
+    n_clusters = 2
     mu = 30
 
     base_de_dados = ler_base_de_dados(dimensao=dimensao, observacoes=observacoes)
