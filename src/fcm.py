@@ -3,19 +3,19 @@ from typing import Optional
 from mpmath import mp, mpf
 
 
-mp.dps = 80
+mp.dps = 400
 
 
-def calculate_euclidean_distance(x: np.ndarray, y: np.ndarray) -> np.float128:
+def calculate_euclidean_distance(x: np.ndarray, y: np.ndarray) -> mpf:
     """
     Quadrado da distância Euclidiana entre dois pontos
     """
-    from mpmath import fsum
+    from mpmath import fsum, power
 
     return mpf(fsum((np.subtract(x, y)) ** mpf(2)))
 
 
-def matrix_norm(x: np.ndarray, y: np.ndarray) -> np.float128:
+def matrix_norm(x: np.ndarray, y: np.ndarray) -> mpf:
     """
     Norma de Frobenius
     """
@@ -61,9 +61,9 @@ def update_membership(
     data: np.ndarray,
     distances: np.ndarray,
     n_clusters: int,
-    mu: np.float128,
+    mu: mpf,
 ) -> None:
-    from mpmath import power, fdiv, fadd
+    from mpmath import power, fdiv
 
     expoente = fdiv(mpf(2), mu - mpf(1))
 
@@ -76,17 +76,17 @@ def update_membership(
                 ]
             )
 
-            u[i][k] = fdiv(1.0, soma_razao_entre_as_distancias)
+            u[i][k] = fdiv(mpf(1), soma_razao_entre_as_distancias)
 
     __verificar_soma_igual_a_1__(u)
 
 
-def update_centroids(u: np.ndarray, data: np.ndarray, mu: np.float128) -> np.ndarray:
+def update_centroids(u: np.ndarray, data: np.ndarray, mu: mpf) -> np.ndarray:
     from mpmath import fdiv
 
     C = np.array(
         [
-            (mpf(str(fdiv(np.sum((i**mu) * j), np.sum((i**mu))))))
+            (mpf((fdiv(np.sum((i**mu) * j), np.sum((i**mu))))))
             for i in u
             for j in data.T
         ]
@@ -95,9 +95,7 @@ def update_centroids(u: np.ndarray, data: np.ndarray, mu: np.float128) -> np.nda
     return np.reshape(C, (C.shape[0] // data.shape[1], data.shape[1]))
 
 
-def mmg(
-    u: np.ndarray, data: np.ndarray, centers: np.ndarray, mu: np.float128
-) -> np.float128:
+def mmg(u: np.ndarray, data: np.ndarray, centers: np.ndarray, mu: mpf) -> mpf:
     total = mpf(0.0)
     for i, d in enumerate(data):
         for j, c in enumerate(centers):
@@ -115,7 +113,6 @@ class FCM:
         self.mu = mpf(mu)
         self.eps = mpf(eps)
 
-
     def _update_membership(self):
         """
         Etapa de Atribuição
@@ -130,7 +127,6 @@ class FCM:
             mu=self.mu,
         )
 
-
     def _update_centroids(self):
         """
         Etapa de Minimização
@@ -140,14 +136,12 @@ class FCM:
             u=self.u, data=self.data, mu=self.mu
         )
 
-
+    @property
     def J(self):
         """
         Mínimos Quadrados Generalizados (MMG)
         """
-        j = mmg(u=self.u, data=self.data, centers=self.centers, mu=self.mu)
-        self.j = j
-
+        return mmg(u=self.u, data=self.data, centers=self.centers, mu=self.mu)
 
     def _gerar_inicializacao(self) -> np.ndarray:
         u: np.ndarray = np.random.uniform(size=(self.n_clusters, self.data.shape[0]))
@@ -161,7 +155,6 @@ class FCM:
         # __verificar_soma_igual_a_1__(u)
 
         return u
-
 
     def fit(self, data: np.ndarray, u: Optional[np.ndarray] = None) -> None:
         """
@@ -178,7 +171,6 @@ class FCM:
             u_copy: np.ndarray = self.u.copy()
 
             self._update_membership()
-            self.J()
             self._update_centroids()
 
             """Critério de Parada"""
@@ -192,10 +184,10 @@ if __name__ == "__main__":
     from utils import ler_base_de_dados, ler_inicializacao
     from pprint import pprint
 
-    dimensao = 2
+    dimensao = 16
     observacoes = 10
-    n_clusters = 2
-    mu = 30
+    n_clusters = 9
+    mu = 1.1
 
     base_de_dados = ler_base_de_dados(dimensao=dimensao, observacoes=observacoes)
 
@@ -222,9 +214,11 @@ if __name__ == "__main__":
 
     print("FCM")
     print("centers")
-    print(fcm.centers)
-    print("u")
-    print(fcm.u)
+    print(fcm.centers.shape)
+    # print(fcm.centers)
+    # print("u")
+    # print(fcm.u)
+    # print(fcm.u.shape)
     print()
 
     """Plot"""
