@@ -1,15 +1,9 @@
-from celery import Celery, group, chord
-from time import sleep
+from celery import Celery, group
+
 
 app = Celery("tasks", broker="amqp://localhost")
 app.conf.update(worker_concurrency=4)
 
-
-@app.task
-def add(x, y):
-    sleep(15)
-    return x + y
- 
 
 @app.task
 def treinamento(dimensao: int, observacoes: int, n_clusters: int, mu: int):
@@ -21,7 +15,6 @@ def treinamento(dimensao: int, observacoes: int, n_clusters: int, mu: int):
     import os
     
     nome_pasta: str = f"experimento_{observacoes}"
-   
     
     base_de_dados = ler_base_de_dados(
         dimensao=dimensao, observacoes=observacoes
@@ -44,7 +37,7 @@ def treinamento(dimensao: int, observacoes: int, n_clusters: int, mu: int):
             j = custo
             u = fcm.u
 
-    nome_arquivo: str = f"experimento_obs_{observacoes}_dim_{dimensao}_nc_{n_clusters}_mu_{mu}.csv"
+    nome_arquivo: str = f"experimento_dim_{dimensao}_nc_{n_clusters}_mu_{mu}.csv"
     
     df = pd.DataFrame(
         columns=[
