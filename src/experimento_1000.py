@@ -13,17 +13,17 @@ mu = [1.1, 8.325, 15.550, 22.775, 30.0]
 
 nome_pasta: str = f"experimento_{observacoes}"
 nome_arquivo: str = f"experimento_{observacoes}.csv"
- 
+
 df = pd.DataFrame(
     columns=[
         "dimensão",
         "mu",
         "quantidade de observações",
-        "quantidade de agrupamentos", 
+        "quantidade de agrupamentos",
         "custo",
-        "u", 
+        "u",
     ]
-) 
+)
 
 for d in dimensao:
     base_de_dados = ler_base_de_dados(dimensao=d, observacoes=observacoes)
@@ -32,7 +32,7 @@ for d in dimensao:
         for m in mu:
             j = mpf("inf")
             u: np.ndarray = []
-            
+
             for i in range(10):
                 inicializacao = ler_inicializacao(
                     iteracao=i, observacoes=observacoes, n_clusters=n_clusters
@@ -45,13 +45,13 @@ for d in dimensao:
                 if custo < j:
                     print(f"dimensao {d} n_clusters {n_clusters} mu {m} iter {i}")
                     j = custo
-                    u = fcm.u 
-                   
+                    u = fcm.u
+
             nova_linha = {
                 "dimensão": d,
                 "mu": m,
                 "quantidade de observações": observacoes,
-                "quantidade de agrupamentos": n_clusters, 
+                "quantidade de agrupamentos": n_clusters,
                 "custo": j,
                 "u": u,
             }
