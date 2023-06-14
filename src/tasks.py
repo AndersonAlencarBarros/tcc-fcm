@@ -1,9 +1,10 @@
 from celery import Celery
+from decouple import config
 
 
 app = Celery(
     "tasks", 
-    broker="redis://default:Tj1gqGMlyiavz6y6ELwivGQSNJIhzBM2@redis-11264.c74.us-east-1-4.ec2.cloud.redislabs.com:11264"
+    broker=config('REDIS_URL')
 )
 app.conf.update(worker_concurrency=3, consumer_timeout=31622400000)
 app.conf.broker_transport_options = {'visibility_timeout': 60 * 60 * 5}   
