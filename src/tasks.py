@@ -1,9 +1,12 @@
 from celery import Celery
 
 
-app = Celery("tasks", broker="amqp://localhost")
-app.conf.update(worker_concurrency=3,
-                consumer_timeout = 31622400000)
+app = Celery(
+    "tasks", 
+    broker="redis://default:Tj1gqGMlyiavz6y6ELwivGQSNJIhzBM2@redis-11264.c74.us-east-1-4.ec2.cloud.redislabs.com:11264"
+)
+app.conf.update(worker_concurrency=3, consumer_timeout=31622400000)
+app.conf.broker_transport_options = {'visibility_timeout': 60 * 60 * 5}   
 
 
 @app.task
@@ -14,13 +17,11 @@ def treinamento(dimensao: int, observacoes: int, n_clusters: int, mu: int):
     from mpmath import mpf
     import pandas as pd
     import os
-    
+
     nome_pasta: str = f"experimento_{observacoes}"
-    
-    base_de_dados = ler_base_de_dados(
-        dimensao=dimensao, observacoes=observacoes
-    )
-    
+
+    base_de_dados = ler_base_de_dados(dimensao=dimensao, observacoes=observacoes)
+
     j = mpf("inf")
     u: np.ndarray = []
 
@@ -39,7 +40,7 @@ def treinamento(dimensao: int, observacoes: int, n_clusters: int, mu: int):
             u = fcm.u
 
     nome_arquivo: str = f"experimento_dim_{dimensao}_nc_{n_clusters}_mu_{mu}.csv"
-    
+
     df = pd.DataFrame(
         columns=[
             "dimensão",
@@ -49,8 +50,8 @@ def treinamento(dimensao: int, observacoes: int, n_clusters: int, mu: int):
             "custo",
             "u",
         ]
-    ) 
-    
+    )
+
     nova_linha = {
         "dimensão": dimensao,
         "mu": mu,

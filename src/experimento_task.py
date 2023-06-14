@@ -27,7 +27,7 @@ for d in dimensao:
             )
             for m in mu
         )
-        
+
 from celery import group
 
 group_tasks = group(list_tasks)
