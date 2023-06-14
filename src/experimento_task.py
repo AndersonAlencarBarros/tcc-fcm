@@ -6,7 +6,7 @@ from tasks import treinamento
 
 """Para 100 observações"""
 observacoes = 100
-qnt_agrupamentos = [2, 34, 66, 99]
+qnt_agrupamentos = [66, 99]
 
 """Para 1000 observações"""
 # observacoes = 1000

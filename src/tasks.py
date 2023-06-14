@@ -1,8 +1,9 @@
-from celery import Celery, group
+from celery import Celery
 
 
 app = Celery("tasks", broker="amqp://localhost")
-app.conf.update(worker_concurrency=4)
+app.conf.update(worker_concurrency=3,
+                consumer_timeout = 31622400000)
 
 
 @app.task
