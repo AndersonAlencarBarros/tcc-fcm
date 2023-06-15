@@ -6,13 +6,15 @@ from tasks import treinamento
 
 """Para 100 observações"""
 observacoes = 100
-qnt_agrupamentos = [66, 99]
+qnt_agrupamentos = [ # 66,
+    99,
+]  # FALTA AS DIMENSOES 4, 8 E 16 PARA 2, 34 QUANTIDADES DE CLUSTERS
 
 """Para 1000 observações"""
 # observacoes = 1000
 # qnt_agrupamentos = [2, 334, 666, 999]
 
-dimensao = [2, 4, 8, 16]
+dimensao = [4, 8, 16]   # 2, 
 mu = [1.1, 8.325, 15.550, 22.775, 30.0]
 
 list_tasks = []

@@ -53,7 +53,7 @@ def __verificar_soma_igual_a_1__(matriz: np.ndarray) -> bool:
 
     assert all(
         isclose(x, 1.0) for x in soma_colunas
-    ), f"Soma das colunas diferente de 1, \n\n matriz \n {matriz} \n\n soma_colunas \n {soma_colunas}"
+    ), f"Soma das colunas diferente de 1"
 
 
 def update_membership(
