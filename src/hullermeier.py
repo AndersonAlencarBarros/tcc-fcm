@@ -13,8 +13,6 @@ def hullermeier(U: np.ndarray, V: np.ndarray):
         for j in range(i, N):
             Eu = fsub(1, np.linalg.norm(U[:, i] - U[:, j], ord=1) / 2.0 )
             Ev = fsub(1, np.linalg.norm(V[:, i] - V[:, j], ord=1) / 2.0 )
-            # Eu = fsub(mpf(1), fdiv(np.sum(np.abs(U[:, i] - U[:, j])), mpf(2)))
-            # Ev = fsub(mpf(1), fdiv(np.sum(np.abs(V[:, i] - V[:, j])), mpf(2)))
 
             d += fabs(fsub(Eu, Ev))
 
@@ -38,27 +36,15 @@ if __name__ == "__main__":
         [0,   0, 1]
     ]) 
     
-    n = 16
-    k = 10
+    n = 16 # Cluster   
+    k = 10 # Dimensao
     for _ in range(10000):
-        U = [[sr.random() for _ in range(k)] for _ in range(n)]
-        V = [[sr.random() for _ in range(k)] for _ in range(n)]
+        U = np.array([[sr.random() for _ in range(k)] for _ in range(n)])
+        V = np.full((n, k), 1/n)
           
         U = U / np.sum(U, axis=0, keepdims=1)
-        V = V / np.sum(V, axis=0, keepdims=1)
         
         h = hullermeier(U, V)
         
         assert h >= 0
-    
-    
-    # V = np.array([
-    #     [0.1, 0.2, 0.7],
-    #     [0.3, 0.5, 0.2]
-    # ])
-
-    # print(U.shape)
-    # print(V.shape)
-
-    # print()
-    # print(hullermeier(U, V))
+     
