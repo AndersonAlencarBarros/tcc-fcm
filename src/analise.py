@@ -4,6 +4,7 @@ from mpmath import *
 from hullermeier import hullermeier
 from fcm import __verificar_soma_igual_a_1__
 
+
 mp.dps = 400
 
 
@@ -55,43 +56,41 @@ resultado = {
 }
 
 
-for d in dimensao:
-    for n_clusters in qnt_agrupamentos:
-        for m in mu:
-            caminho_arquivo = f"../resultados/experimento_10/experimento_obs_{observacoes}_dim_{d}_nc_{n_clusters}_mu_{m}.csv"
+# for d in dimensao:
+#     for n_clusters in qnt_agrupamentos:
+#         for m in mu:
+#             caminho_arquivo = f"../resultados/experimento_10/experimento_obs_{observacoes}_dim_{d}_nc_{n_clusters}_mu_{m}.csv"
 
-            df = pd.read_csv(caminho_arquivo, index_col=False, dtype=str)
-            u_calculado = retornar_matrix_pertinencia(
-                df["u"][0], n_clusters=n_clusters, observacoes=observacoes
-            )
-            u_infinito = retorna_particao_base(n_clusters, observacoes)
+#             df = pd.read_csv(caminho_arquivo, index_col=False, dtype=str)
+           
+#             u_infinito = retorna_particao_base(n_clusters, observacoes)
             
-            print(u_calculado.shape)
-            __verificar_soma_igual_a_1__(u_calculado)
+#             print(u_calculado.shape)
+#             __verificar_soma_igual_a_1__(u_calculado)
 
-            h = hullermeier(u_calculado, u_infinito)
+#             h = hullermeier(u_calculado, u_infinito)
             
-            resultado[f'dimensao_{d}'][f'{n_clusters}'].append(h)
+#             resultado[f'dimensao_{d}'][f'{n_clusters}'].append(h)
 
 # from pprint import pprint
 # pprint(resultado)
 
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 
-for i, dimensao in enumerate(resultado.keys()):
-    plt.subplot(2, 2, i+1)  # Configurar subplot
-    plt.title(dimensao)     # Configurar título do gráfico
+# for i, dimensao in enumerate(resultado.keys()):
+#     plt.subplot(2, 2, i+1)  # Configurar subplot
+#     plt.title(dimensao)     # Configurar título do gráfico
 
-    for tamanho, dados in resultado[dimensao].items():
-        plt.plot(mu, dados, label=f'Q. Clusters {tamanho}')  # Plotar linha para cada tamanho
+#     for tamanho, dados in resultado[dimensao].items():
+#         plt.plot(mu, dados, label=f'Q. Clusters {tamanho}')  # Plotar linha para cada tamanho
 
-    plt.legend()     # Adicionar legenda
-    plt.xlabel('m')  # Configurar label do eixo x
-    plt.ylabel('Hullermeier')  # Configurar label do eixo y
+#     plt.legend()     # Adicionar legenda
+#     plt.xlabel('m')  # Configurar label do eixo x
+#     plt.ylabel('Hullermeier')  # Configurar label do eixo y
 
-plt.tight_layout()  # Ajustar layout dos subplots
-plt.show()  # Exibir os gráficos dos subplots
-plt.show()  # Exibir os gráficos
+# plt.tight_layout()  # Ajustar layout dos subplots
+# plt.show()  # Exibir os gráficos dos subplots
+# plt.show()  # Exibir os gráficos
 
 
 
@@ -100,3 +99,10 @@ plt.show()  # Exibir os gráficos
 
 # base.mkdir(exist_ok=True)
 # jsonpath.write_text(dumps(resultado))
+
+if __name__ == "__main__":
+    u_calculado = retornar_matrix_pertinencia(
+        df["u"][0], n_clusters=2, observacoes=10
+    )
+    
+    print(u_calculado)

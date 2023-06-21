@@ -6,22 +6,15 @@ from json import dumps
 
 sr = SystemRandom()
 
-
-observacoes = [10, 100, 1000, 10000]
-qnt_agrupamentos = [
-    [2, 4, 6, 9],
-    [2, 34, 66, 99],
-    [2, 334, 666, 999],
-    [2, 3334, 6666, 9999],
-]
+quantidade_de_inicializacoes = 3
+observacoes = [10, 30, 100]
+qnt_agrupamentos = 2
 
 
-for obs, n_clusters in zip(observacoes, qnt_agrupamentos):
-    for i, n in enumerate(n_clusters):
-        for i in range(10):
-            print(obs, n)
+for obs in observacoes:
+        for i in range(quantidade_de_inicializacoes):
             u = np.random.uniform(
-                size=(n, obs),
+                size=(qnt_agrupamentos, obs),
             )
 
             """ Normaliza por coluna, divide cada elemento de cada coluna pela soma total daquela coluna """
@@ -34,9 +27,9 @@ for obs, n_clusters in zip(observacoes, qnt_agrupamentos):
                 np.allclose(soma_colunas, 1.0) == 1.0
             ), "Soma das colunas diferente de 1"
 
-            dados = {"observacoes": obs, "n_cluster": n, "u": u.tolist()}
+            dados = {"observacoes": obs, "u": u.tolist()}
 
-            base = Path(f"inicializacao/init_{obs}_{n}")
+            base = Path(f"inicializacao/init_{obs}")
             jsonpath = base / f"init{i}.json"
 
             base.mkdir(exist_ok=True)

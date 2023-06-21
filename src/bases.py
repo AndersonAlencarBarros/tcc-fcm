@@ -8,20 +8,19 @@ from pathlib import Path
 sr = SystemRandom()
 
 
-observacoes = [10, 100, 1000, 10000]
-dimensoes = [2, 4, 8, 16]
+quantidade_de_bases = 3
+observacoes = [10, 30, 100]
+dimensoes = [4, 8, 16]
 
 
 for dimensao, obs in product(dimensoes, observacoes):
-    # bases = []
-    # for _ in range(100):
-    vector = [[sr.random() for _ in range(dimensao)] for _ in range(obs)]
-    # bases.append(vector)
+    for i in range(quantidade_de_bases):
+        base = [[sr.random() for _ in range(dimensao)] for _ in range(obs)]
+          
+        dados = {"dimensao": dimensao, "observacoes": obs, "base": base}
+   
+        base = Path(f"bases/dimensao_{dimensao}_obs_{obs}")
+        jsonpath = base / f"base_{i}.json"
 
-    dados = {"dimensao": dimensao, "observacoes": obs, "bases": vector}
-
-    base = Path(f"bases/dimensao_{dimensao}")
-    jsonpath = base / f"obs_{obs}.json"
-
-    base.mkdir(exist_ok=True)
-    jsonpath.write_text(dumps(dados))
+        base.mkdir(exist_ok=True)
+        jsonpath.write_text(dumps(dados))
