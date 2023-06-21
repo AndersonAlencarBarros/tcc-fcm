@@ -12,25 +12,23 @@ qnt_agrupamentos = 2
 
 
 for obs in observacoes:
-        for i in range(quantidade_de_inicializacoes):
-            u = np.random.uniform(
-                size=(qnt_agrupamentos, obs),
-            )
+    for i in range(quantidade_de_inicializacoes):
+        u = np.random.uniform(
+            size=(qnt_agrupamentos, obs),
+        )
 
-            """ Normaliza por coluna, divide cada elemento de cada coluna pela soma total daquela coluna """
-            u = u / np.sum(u, axis=0, keepdims=1)
+        """ Normaliza por coluna, divide cada elemento de cada coluna pela soma total daquela coluna """
+        u = u / np.sum(u, axis=0, keepdims=1)
 
-            soma_colunas = np.sum(u, axis=0)
+        soma_colunas = np.sum(u, axis=0)
 
-            """ Verificar cada coluna soma 1"""
-            assert (
-                np.allclose(soma_colunas, 1.0) == 1.0
-            ), "Soma das colunas diferente de 1"
+        """ Verificar cada coluna soma 1"""
+        assert np.allclose(soma_colunas, 1.0) == 1.0, "Soma das colunas diferente de 1"
 
-            dados = {"observacoes": obs, "u": u.tolist()}
+        dados = {"observacoes": obs, "u": u.tolist()}
 
-            base = Path(f"inicializacao/init_{obs}")
-            jsonpath = base / f"init{i}.json"
+        base = Path(f"inicializacao/init_{obs}")
+        jsonpath = base / f"init{i}.json"
 
-            base.mkdir(exist_ok=True)
-            jsonpath.write_text(dumps(dados))
+        base.mkdir(exist_ok=True)
+        jsonpath.write_text(dumps(dados))

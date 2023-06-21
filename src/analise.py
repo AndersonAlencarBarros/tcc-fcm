@@ -1,5 +1,5 @@
 import numpy as np
-import pandas as pd  
+import pandas as pd
 from mpmath import *
 from hullermeier import hullermeier
 from fcm import __verificar_soma_igual_a_1__
@@ -9,18 +9,13 @@ mp.dps = 400
 
 
 def retornar_matrix_pertinencia(string, n_clusters: int, observacoes: int):
-    import re 
-    
+    import re
+
     pattern = r"\d+\.\d+"
-    numeros = re.findall(pattern, string) 
+    numeros = re.findall(pattern, string)
     numeros = [mpf(num) for num in numeros]
-       
+
     return np.reshape(np.array(numeros), (n_clusters, observacoes))
-
-
-def retorna_particao_base(n_clusters: int, observacoes: int):
-    return np.full((n_clusters, observacoes), fdiv(1, n_clusters))
-
 
 observacoes = 10
 qnt_agrupamentos = [2, 4, 6, 9]
@@ -29,30 +24,30 @@ mu = [1.1, 8.325, 15.550, 22.775, 30.0]
 
 
 resultado = {
-    'dimensao_2': {
-        '2': [],
-        '4': [],
-        '6': [],
-        '9': [],
+    "dimensao_2": {
+        "2": [],
+        "4": [],
+        "6": [],
+        "9": [],
     },
-    'dimensao_4': {
-        '2': [],
-        '4': [],
-        '6': [],
-        '9': [],
+    "dimensao_4": {
+        "2": [],
+        "4": [],
+        "6": [],
+        "9": [],
     },
-    'dimensao_8': {
-        '2': [],
-        '4': [],
-        '6': [],
-        '9': [],
+    "dimensao_8": {
+        "2": [],
+        "4": [],
+        "6": [],
+        "9": [],
     },
-    'dimensao_16': {
-        '2': [],
-        '4': [],
-        '6': [],
-        '9': [],
-    }
+    "dimensao_16": {
+        "2": [],
+        "4": [],
+        "6": [],
+        "9": [],
+    },
 }
 
 
@@ -62,14 +57,14 @@ resultado = {
 #             caminho_arquivo = f"../resultados/experimento_10/experimento_obs_{observacoes}_dim_{d}_nc_{n_clusters}_mu_{m}.csv"
 
 #             df = pd.read_csv(caminho_arquivo, index_col=False, dtype=str)
-           
+
 #             u_infinito = retorna_particao_base(n_clusters, observacoes)
-            
+
 #             print(u_calculado.shape)
 #             __verificar_soma_igual_a_1__(u_calculado)
 
 #             h = hullermeier(u_calculado, u_infinito)
-            
+
 #             resultado[f'dimensao_{d}'][f'{n_clusters}'].append(h)
 
 # from pprint import pprint
@@ -93,7 +88,6 @@ resultado = {
 # plt.show()  # Exibir os gráficos
 
 
-
 # base = Path(f"resultado/resultado_{observacoes}")
 # jsonpath = base / "resultado.json"
 
@@ -101,8 +95,6 @@ resultado = {
 # jsonpath.write_text(dumps(resultado))
 
 if __name__ == "__main__":
-    u_calculado = retornar_matrix_pertinencia(
-        df["u"][0], n_clusters=2, observacoes=10
-    )
-    
+    u_calculado = retornar_matrix_pertinencia(df["u"][0], n_clusters=2, observacoes=10)
+
     print(u_calculado)

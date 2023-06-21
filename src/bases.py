@@ -16,9 +16,9 @@ dimensoes = [4, 8, 16]
 for dimensao, obs in product(dimensoes, observacoes):
     for i in range(quantidade_de_bases):
         base = [[sr.random() for _ in range(dimensao)] for _ in range(obs)]
-          
+
         dados = {"dimensao": dimensao, "observacoes": obs, "base": base}
-   
+
         base = Path(f"bases/dimensao_{dimensao}_obs_{obs}")
         jsonpath = base / f"base_{i}.json"
 
