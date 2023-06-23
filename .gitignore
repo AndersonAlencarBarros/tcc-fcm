@@ -1,6 +1,9 @@
 bases/
 inicializacao/
-resultados/
+src/resultados/
+src/resultado_agregado/
+
+
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

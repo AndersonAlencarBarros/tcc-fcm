@@ -7,9 +7,6 @@ app.conf.update(worker_concurrency=3, consumer_timeout=31622400000)
 app.conf.broker_transport_options = {"visibility_timeout": 60 * 60 * 5}
 
 
-def salvar_resultados(dados):
-    ...
-
 quantidade_de_inicializacoes = 3
 
 @app.task
