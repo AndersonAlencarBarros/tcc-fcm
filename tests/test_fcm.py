@@ -27,8 +27,7 @@ def inicializacao():
     return u
 
 
-def test_FCM(): 
-    
+def test_FCM():
     X = np.array(
         [
             [1, 3],

@@ -19,8 +19,8 @@ def hullermeier(U: np.ndarray, V: np.ndarray):
     d /= mpf((N * (N - 1)) / 2.0)
 
     resultado = fsub(1, d)
-    
-    assert resultado >=0, "Indice de Hullermeier menor do que zero."
+
+    assert resultado >= 0, "Indice de Hullermeier menor do que zero."
     return resultado
 
 

@@ -7,7 +7,7 @@ mp.dps = 400
 
 
 quantidade_de_bases = 3
-quantidade_de_observacoes = 100         # 10, 30, 100
+quantidade_de_observacoes = 100  # 10, 30, 100
 dimensoes = [4, 8, 16]
 expoentes_fuzzy = [1.1, 8.325, 15.550, 22.775, 30.0]
 
@@ -21,10 +21,10 @@ for dimensao in dimensoes:
         for i in range(quantidade_de_bases):
             nome_arquivo: str = f"{nome_pasta}/experimento_inicializacao_{i}.csv"
             df = pd.read_csv(nome_arquivo, dtype=str)
-            
-            dict_hullermeier[f'Hullermeier {i}'] = df["hullermeier"][0]
+
+            dict_hullermeier[f"Hullermeier {i}"] = df["hullermeier"][0]
             media_hullermeier += mpf(df["hullermeier"][0])
-            
+
         df = pd.DataFrame(
             columns=[
                 "quantidade de observações",
@@ -44,9 +44,9 @@ for dimensao in dimensoes:
             "Hullermeier 0": dict_hullermeier["Hullermeier 0"],
             "Hullermeier 1": dict_hullermeier["Hullermeier 1"],
             "Hullermeier 2": dict_hullermeier["Hullermeier 2"],
-            "Média do Indice de Hullermeier": media_hullermeier / quantidade_de_bases
+            "Média do Indice de Hullermeier": media_hullermeier / quantidade_de_bases,
         }
-        
+
         df = pd.concat([df, pd.DataFrame([nova_linha])], ignore_index=True)
         df.to_csv(
             f"resultado_agregado/obs_{quantidade_de_observacoes}/experimento_dimensao_{dimensao}_obs_{quantidade_de_observacoes}_expoente_fuzzy_{expoente}.csv",
@@ -56,4 +56,4 @@ for dimensao in dimensoes:
 
 
 if __name__ == "__main__":
-   ...
+    ...
