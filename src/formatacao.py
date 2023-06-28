@@ -12,6 +12,11 @@ dimensoes = [4, 8, 16]
 expoentes_fuzzy = [1.1, 8.325, 15.550, 22.775, 30.0]
 
 
+"""
+Lê os 3 resultados para cada inicialização e faz a média do índice de Hullermeier
+"""
+
+
 for dimensao in dimensoes:
     for expoente in expoentes_fuzzy:
         nome_pasta: str = f"resultados/obs_{quantidade_de_observacoes}/experimento_dimensao_{dimensao}_obs_{quantidade_de_observacoes}_expoente_fuzzy_{expoente}/"

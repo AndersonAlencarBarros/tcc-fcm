@@ -7,6 +7,13 @@ dimensoes = [4, 8, 16]
 expoentes_fuzzy = [1.1, 8.325, 15.550, 22.775, 30.0]
 
 
+"""
+Gera o Resultado Agregado
+
+Lê todos os resultados e concatena em um único csv.
+"""
+
+
 lista_dataframes = []
 for obs in observacoes:
     for dimensao in dimensoes:
