@@ -86,10 +86,6 @@ for i, obs_key in enumerate(obs_keys):
         # Cria um novo subplot para cada combinação de obs e dimensão
         plt.subplot(3, 3, i * 3 + j + 1)
         
-        # plt.scatter(x_values, y_values, color='blue', label='Pontos')
-        
-        # plt.plot(x_values, y_values)
-        
         sns.set_style("whitegrid")
         sns.scatterplot(x=x_values, y=y_values, )
         sns.lineplot(x=x_values, y=y_values,)
