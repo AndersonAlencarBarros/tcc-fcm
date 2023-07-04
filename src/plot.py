@@ -94,7 +94,7 @@ for i, obs_key in enumerate(obs_keys):
         plt.xlabel('Expoente Fuzzy')
         plt.ylabel('Hullemeier')
         
-        plt.ylim(0, 1.1)
+        plt.ylim(0.45, 1.05)
         plt.xlim(1.1, 30)
         
         plt.xticks(fontsize=10)
