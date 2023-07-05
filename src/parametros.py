@@ -6,7 +6,7 @@ class Parametros():
     quantidade_de_agrupamentos = 2
     dimensoes = [4, 8, 16]
     quantidade_de_observacoes = [10, 30, 100]
-    expoentes_fuzzy = [1.1, 8.325, 15.550, 22.775, 30.0]
+    expoentes_fuzzy = [1.1, 2.9, 4.706, 6.512, 8.325, 15.550, 22.775, 30.0]
     
     
     @staticmethod

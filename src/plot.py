@@ -70,7 +70,7 @@ import seaborn as sns
 
 # Criar gráficos para cada dimensão ou por quantidade de observacoes
 
-for dimensao, observacoes in resultado.items():
+for dimensao, observacoes in resultado_por_dimensao.items():
     plt.figure(figsize=(8, 6))
     plt.title(f"{dimensao}")
     plt.xlabel("Expoente Fuzzy")
