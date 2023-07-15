@@ -53,7 +53,10 @@ Preenche os dicionários
 for obs in p.quantidade_de_observacoes:
     for dimensao in p.dimensoes:
         for expoente in p.expoentes_fuzzy:
-            nome_arquivo: str = f"resultado_agregado/obs_{obs}/experimento_dimensao_{dimensao}_expoente_fuzzy_{expoente}.csv"
+            nome_arquivo: str = (
+                f"resultado_agregado/obs_{obs}/"
+                f"experimento_dimensao_{dimensao}_expoente_fuzzy_{expoente}.csv"
+            )
             df = pd.read_csv(nome_arquivo, dtype=str)
             
             media_de_hullermeier = mpf(df["Média do Indice de Hullermeier"][0]) 
@@ -68,7 +71,12 @@ Exibe os Resultados
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-# Criar gráficos para cada dimensão ou por quantidade de observacoes
+"""
+Criar gráficos para cada dimensão ou por quantidade de observacoes
+
+Modificar para resultado_por_dimensao ou resultado 
+de acordo com o plot desejado
+"""
 
 for dimensao, observacoes in resultado_por_dimensao.items():
     plt.figure(figsize=(8, 6))
@@ -88,44 +96,39 @@ for dimensao, observacoes in resultado_por_dimensao.items():
 Gráfico Geral, com todas as visualizações.
 """
 
+obs_keys = list(resultado.keys())
 
-# # Obtém as chaves do dicionário
-# obs_keys = list(resultado.keys())
+print(obs_keys)
 
-# print(obs_keys)
+dimensoes = ['4 dimensões', '8 dimensões', '16 dimensões']
 
-# # Define as dimensões para plotagem
-# dimensoes = ['4 dimensões', '8 dimensões', '16 dimensões']
+mp.dps = 25
 
-# # Configura a precisão dos números
-# mp.dps = 25
-
-# for i, obs_key in enumerate(obs_keys):
-#     obs_data = resultado[obs_key]
+for i, obs_key in enumerate(obs_keys):
+    obs_data = resultado[obs_key]
     
-#     for j, dim_key in enumerate(dimensoes):
-#         dim_data = obs_data[dim_key]
+    for j, dim_key in enumerate(dimensoes):
+        dim_data = obs_data[dim_key]
         
-#         y_values = [float(nstr(value)) for value in dim_data]
+        y_values = [float(nstr(value)) for value in dim_data]
         
-#         # Cria um novo subplot para cada combinação de obs e dimensão
-#         plt.subplot(3, 3, i * 3 + j + 1)
+        plt.subplot(3, 3, i * 3 + j + 1)
         
-#         sns.set_style("whitegrid")
-#         sns.scatterplot(x=p.expoentes_fuzzy, y=y_values, )
-#         sns.lineplot(x=p.expoentes_fuzzy, y=y_values,)
+        sns.set_style("whitegrid")
+        sns.scatterplot(x=p.expoentes_fuzzy, y=y_values, )
+        sns.lineplot(x=p.expoentes_fuzzy, y=y_values,)
         
-#         plt.title(f'{obs_key}, {dim_key}')
-#         plt.xlabel('Expoente Fuzzy')
-#         plt.ylabel('Hullemeier')
+        plt.title(f'{obs_key}, {dim_key}')
+        plt.xlabel('Expoente Fuzzy')
+        plt.ylabel('Hullemeier')
         
-#         plt.ylim(0.45, 1.05)
-#         plt.xlim(1.1, 30)
+        plt.ylim(0.45, 1.05)
+        plt.xlim(1.1, 30)
         
-#         plt.xticks(fontsize=10)
-#         plt.yticks(fontsize=10)
-#         plt.grid(True, linestyle='--', alpha=0.5)
+        plt.xticks(fontsize=10)
+        plt.yticks(fontsize=10)
+        plt.grid(True, linestyle='--', alpha=0.5)
 
 
-# plt.tight_layout()
-# plt.show() 
+plt.tight_layout()
+plt.show() 

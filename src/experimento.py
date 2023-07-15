@@ -63,7 +63,10 @@ def treinamento(
         "hullermeier": str(indice_hullemeier),
     }
 
-    nome_pasta: str = f"resultados/obs_{quantidade_de_observacoes}/experimento_dimensao_{dimensao}_expoente_fuzzy_{expoente_fuzzy}/"
+    nome_pasta: str = (
+        f"resultados/obs_{quantidade_de_observacoes}/"
+        f"experimento_dimensao_{dimensao}_expoente_fuzzy_{expoente_fuzzy}/"
+    )
 
     if not os.path.exists(nome_pasta):
         os.makedirs(nome_pasta)
