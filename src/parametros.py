@@ -1,3 +1,5 @@
+from typing import Dict
+
  
 class Parametros():
     quantidade_de_bases = 3
